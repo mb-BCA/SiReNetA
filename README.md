@@ -104,4 +104,4 @@ limitations under the License.
 
 ##### March 6, 2024
 
-*SiReNetA* is made publicly available in *Alpha* development version for testing and referencing. A final release and registration in the Python Package Index (PyPI) to come soon …
+*SiReNetA* is made publicly available in *alpha* development version for testing and referencing. Both internal (e.g., specifics of algorithms) and external (e.g., names of functions) changes may happen before final release of version 1.0.  First stable version will be registered in the Python Package Index (PyPI).
