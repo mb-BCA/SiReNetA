@@ -2,18 +2,20 @@
 
 **Sitmulus-Response Network Analysis (SiReNetA)** : A library for the study complex networks in the light of canonical propagation models.
 
-Graph theory constitutes a widely used and established field providing powerful tools for the characterization of complex networks. However, the diversity of complex networks studied nowadays overcomes the capabilities of graph theory (originally developed for binary adjacency matrices) to understand networks and their function. In the recent years plenty of alternative metrics have been proposed which are–one way or another–based on dynamical phenomena happening on networks.
+Graph theory constitutes a widely used and established field providing powerful tools for the characterisation of complex networks. However, the diversity of complex networks studied nowadays overcomes the capabilities of graph theory (originally developed for binary adjacency matrices) to understand networks and their function. In the recent years plenty of alternative metrics have been proposed which are–one way or another–based on dynamical phenomena happening on networks.
 
 *Stimulus-Response Network Analysis (SRNA)* proposes a generalised course of action to derive network metrics and characterise networks from the viewpoint of dynamical systems, valid for different canonical propagation models. The first step of the analysis consists of selecting an adequate propagation model that respects minimal constraints and assumptions of the real network under investigation. Once the model is chosen, the temporal pair-wise (conditional) responses $R_{ij}(t)$ that nodes exert on each other are estimated. Finally information about the network is derived out of the observed responses.
 
-Find an quick introductions to *SRNA*, examples and tutorials of usage for *SiReNetA* in the following repository: [https://github.com/mb-BCA/SiReNetA_Tutorials](https://github.com/mb-BCA/SiReNetA_Tutorials).
 
-##### Reference and Citation
+>Visit [https://github.com/mb-BCA/SiReNetA_Tutorials](https://github.com/mb-BCA/SiReNetA_Tutorials) for tutorials and practical examples of how to use '*Response Network Analysis*' and the *SiReNetA* library.
 
-1. G. Zamora-López and M. Gilson "*[An integrative dynamical perspective for graph theory and the analysis of complex networks](https://doi.org/10.48550/arXiv.2307.02449)*" arXiv:2307.02449 (2023).
-2. M. Gilson, N. E. Kouvaris, et al. "*[Network analysis of whole-brain fMRI
+
+##### References and Citation
+
+- G. Zamora-López and M. Gilson "*[An integrative dynamical perspective for graph theory and the analysis of complex networks](https://doi.org/10.48550/arXiv.2307.02449)*" arXiv:2307.02449 (2023).
+- M. Gilson, N. E. Kouvaris, et al. "*[Network analysis of whole-brain fMRI
 dynamics: A new framework based on dynamic communicability](https://doi.org/10.1016/j.neuroimage.2019.116007)*" NeuroImage **201**, 116007 (2019).
-3. M. Gilson, N. E. Kouvaris, G. Deco and G. Zamora-López "*[Framework based on communicability and flow to analyze complex networks](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.97.052301)*" Phys. Rev. E **97**, 052301 (2018).
+- M. Gilson, N. E. Kouvaris, G. Deco and G. Zamora-López "*[Framework based on communicability and flow to analyze complex networks](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.97.052301)*" Phys. Rev. E **97**, 052301 (2018).
 
 
 
@@ -36,7 +38,7 @@ The installation command can also be run from a cell in a **Jupyter notebook**. 
 
 	%pip install git+https://github.com/mb-BCA/SiReNetA.git@master
 
-**B) Download and install**: Visit the GitHub repository [https://github.com/mb-BCA/SiReNetA/](https://github.com/mb-BCA/SiReNetA/) and click on the "<> Code" button at the right hand side (the green button). Select "Download ZIP". Download to a prefered path, e.g.' "~/Downloads/" and unzip the file. Open a terminal and move to that folder, e.g.,
+**B) Download and install**: Visit the GitHub repository [https://github.com/mb-BCA/SiReNetA/](https://github.com/mb-BCA/SiReNetA/) and click on the "<> Code" button at the right hand side (the green button). Select "Download ZIP". Download to a preferred path, e.g.' "~/Downloads/" and unzip the file. Open a terminal and move to that folder, e.g.,
 
 	$ cd ~/Downloads/sireneta-master/
 
@@ -49,9 +51,7 @@ Do not forget the "." at the end which means "*install from this directory using
 
 
 &nbsp;
-### GETTING STARTED AND FINDING DOCUMENTATION
-
->Visit the repository [https://github.com/mb-BCA/SiReNetA_Tutorials](https://github.com/mb-BCA/SiReNetA_Tutorials) for tutorials and practical examples of how to use '*Response Network Analysis*' and the *SiReNetA* library.
+### ORGANISATION AND DOCUMENTATION
 
 The library is organised into the following user modules:
 
