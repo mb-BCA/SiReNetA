@@ -4,7 +4,9 @@
 
 Graph theory constitutes a widely used and established field providing powerful tools for the characterization of complex networks. However, the diversity of complex networks studied nowadays overcomes the capabilities of graph theory (originally developed for binary adjacency matrices) to understand networks and their function. In the recent years plenty of alternative metrics have been proposed which are–one way or another–based on dynamical phenomena happening on networks.
 
-*Stimulus-Response Network Analysis* proposes a generalised course of action to derive network metrics and characterise networks from the viewpoint of dynamical systems, valid for different canonical propagation models. The first step of the analysis consists of selecting an adequate propagation model that respects minimal constraints and assumptions of the real network under investigation. Once the model is chosen, the temporal pair-wise (conditional) responses $R_{ij}(t)$ that nodes exert on each other are estimated. Finally information about the network is derived out of the observed responses.
+*Stimulus-Response Network Analysis (SRNA)* proposes a generalised course of action to derive network metrics and characterise networks from the viewpoint of dynamical systems, valid for different canonical propagation models. The first step of the analysis consists of selecting an adequate propagation model that respects minimal constraints and assumptions of the real network under investigation. Once the model is chosen, the temporal pair-wise (conditional) responses $R_{ij}(t)$ that nodes exert on each other are estimated. Finally information about the network is derived out of the observed responses.
+
+Find an quick introductions to *SRNA*, examples and tutorials of usage for *SiReNetA* in the following repository: [https://github.com/mb-BCA/SiReNetA_Tutorials](https://github.com/mb-BCA/SiReNetA_Tutorials).
 
 ##### Reference and Citation
 
