@@ -25,8 +25,6 @@ module for 'official' release into the package.
 
 # Third party packages
 import numpy as np
-import numpy.linalg
-import scipy.linalg
 from numba import jit
 
 

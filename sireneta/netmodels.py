@@ -56,12 +56,10 @@ SpatialLatticeFromNetwork
 
 # Third party packages
 import numpy as np
-import numpy.linalg
-import scipy.linalg
 from numba import jit
 
-import galib
-from galib.models import*
+# import galib
+# from galib.models import*
 
 
 ## DETERMINISTIC GRAPH MODELS ##################################################

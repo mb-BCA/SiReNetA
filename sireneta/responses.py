@@ -67,7 +67,7 @@ cability and flow to analyze complex networks" Phys. Rev. E 97, 052301 (2018).
 
 # Third party packages
 import numpy as np
-import numpy.linalg
+# import numpy.linalg
 import scipy.linalg
 # Local imports from sireneta
 from . import io_helpers
