@@ -60,7 +60,7 @@ The library is organised into the following user modules:
 - *__simulate.py__* : Functions to run simulations of the different canonical models on networks.
 - *__tools.py__* : Miscellaneous functionalities.
 
-The documentation of the library can be accessed 'online' typing  `help(module.py)` in a Python interactive session, or typing `modulename?` in IPython or a Jupyter notebook. For example, to see the principal description of *SiReNetA*, type :
+The documentation of the library can be accessed 'online' typing  `help(module_name)` in a Python interactive session, or typing `module_name?` in IPython or a Jupyter notebook. For example, to see the principal description of *SiReNetA*, type :
 
 	>>> import sireneta as sna
 	>>> sna?
@@ -74,7 +74,7 @@ To see the list of functions available in each of the modules, call their docume
 
 Details of each function can also be seen using the usual help,
 
-	>>> sna.modulename.funcname?
+	>>> sna.module_name.func_name?
 
 >**NOTE:** Importing *SiReNetA* brings all functions in the modules *responses.py* and *metrics.py* into the local namespace. Therefore, these functions can be called as `sna.func()` instead of `sna.responses.func()` or `sna.metrics.func()`.
 
