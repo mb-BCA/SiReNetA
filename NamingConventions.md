@@ -1,10 +1,8 @@
 ## Naming conventions for the metrics and their corresponding functions
 
-Naming of objects and metrics needs to be corrected in the DynCom / DynFlow formalism. We should give a detailed though of what each object and metric truly measure from the point of view of the dynamic propagation system that represents. But, we should neither forget the practicality, that many graph/network concepts are well stablished and are familiar to the community. So, as an extension of graph/network analysis tools, we should take this on account and provide names that are familiar to the end users.
-
 #### communicability, response, flows, … ??
 
-Another possible source of confusion is that some of the metrics are characterised at three different levels: network, node and link. So, this needs to be explicit in the naming. For example, we could say (network flow, node flow and link flow).
+A possible source of confusion is that some of the metrics are characterised at three different levels: network, node and link. So, this needs to be explicit in the naming. For example, we could say (network flow, node flow and link flow).
 
 
 ##### List of names to take care of, and decide upon
@@ -13,14 +11,14 @@ Another possible source of confusion is that some of the metrics are characteris
 - model-based network analysis --> flow-based, diffusion-based, response-based, impulse-based, perturbation-based, ...
 - response --> activity, influence, flow, **response**
 - dynamic response --> temporal response.
-- total response --> network response, network response, network flow, … ("total" is not a good term because it could mean the whole-network, or the total response over time.)
+- total response --> network response, global network response, network flow, … ("total" is not a good term because it could mean the whole-network, or the total response over time.)
 - in-/out-response --> node response.
-- in-response --> node sensitivity/reactivity?
-- out-response --> node influence? Centrality?
+- in-response --> node sensitivity/reactivity? Integration?
+- out-response --> node influence? Centrality? Broadcasting?
 - If network/node/link response are the temporal evolution of the network/node/link, then how to call the sum over time (integral) of those quantities?
 
 
-##### Internal naming for the canonical models, to decide upon
+##### Naming for the canonical models, to decide upon
 
 These names are relevant because they are the "short names" we should use to "tag" the functions that are specific for each model. And, for simplicity and coherence, these should be the same names we will use in v3 for the class attribute that specifies the canonical model.
 
@@ -50,11 +48,15 @@ In the new paper, where we generalise the ideas of the "dynamic response" for pl
 **ACHTUNG !!** We must look in PyPI whether libraries with these names already exist :(
 
 
+#### Suggested names for functions
 
-## Internal variable naming conventions
+Special care for the functions to compute the network (pair-wise) responses.
+
+<br>
+
+#### Internal variable naming conventions
 
 
-<br/>
 Here the list of proposed variable and function changes. Add alternative names for each case if dissagree, or add other proposals as well.
 
 - con_matrix --> con
