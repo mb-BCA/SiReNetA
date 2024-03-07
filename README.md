@@ -1,5 +1,7 @@
 # SiReNetA
 
+> NOTE! Current version is an "*alpha - development*" for testing and validation. Several changes expected until final release of version 1.0. If only interested in the *leaky-cascade* canonical model (multivariate Ornstein-Uhlenbeck), we recommend users to continue using the *[NetDynFlow](https://github.com/mb-BCA/NetDynFlow)* package. Upon release of version 1.0 of *SiReNetA*,  version 1.0 will supersede the *NetDynFlow* package.
+
 **Sitmulus-Response Network Analysis (SiReNetA)** : A library for the study complex networks in the light of canonical propagation models.
 
 Graph theory constitutes a widely used and established field providing powerful tools for the characterisation of complex networks. However, the diversity of complex networks studied nowadays overcomes the capabilities of graph theory (originally developed for binary adjacency matrices) to understand networks and their function. In the recent years plenty of alternative metrics have been proposed which are–one way or another–based on dynamical phenomena happening on networks.
@@ -102,6 +104,6 @@ limitations under the License.
 -------------------------------------------------------------------------------
 ### VERSION HISTORY
 
-##### March 6, 2024
+##### March 7, 2024
 
-*SiReNetA* is made publicly available in *alpha* development version for testing and referencing. Both internal (e.g., specifics of algorithms) and external (e.g., names of functions) changes may happen before final release of version 1.0.  First stable version will be registered in the Python Package Index (PyPI).
+*SiReNetA* is made publicly available in *alpha - development* version for testing and referencing. Both internal (e.g., specifics of algorithms) and external (e.g., names of functions) changes may happen before final release of version 1.0. Comments, bug reports and recommendations are welcome.
