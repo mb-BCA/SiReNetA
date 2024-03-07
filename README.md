@@ -1,6 +1,6 @@
 # SiReNetA
 
-> NOTE! Current version is an "*alpha - development*" for testing and validation. Several changes expected until final release of version 1.0. If only interested in the *leaky-cascade* canonical model (multivariate Ornstein-Uhlenbeck), we recommend users to continue using the *[NetDynFlow](https://github.com/mb-BCA/NetDynFlow)* package. Upon release of version 1.0, *SiReNetA* will supersede the *NetDynFlow* package.
+> NOTE! Current version is an "*alpha - development*" for testing and validation. Several changes expected until final release of version 1.0. If only interested in the *leaky-cascade* canonical model (multivariate Ornstein-Uhlenbeck), we recommend to continue using the *[NetDynFlow](https://github.com/mb-BCA/NetDynFlow)* package. Upon release of version 1.0, *SiReNetA* will supersede the *NetDynFlow* package.
 
 **Sitmulus-Response Network Analysis (SiReNetA)** : A library for the study of complex networks in the light of canonical propagation models.
 
