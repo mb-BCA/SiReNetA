@@ -159,7 +159,7 @@ def Jacobian_LeakyCascade(con, tau):
     if tau.dtype != np.float64:    tau = tau.astype(np.float64)
 
     # 1) CALCULATE THE JACOBIAN MATRIX
-    jac = -1.0/tau * np.identity(N, dtype=float) + con
+    jac = -1.0/tau * np.identity(N, dtype=np.float64) + con
 
     return jac
 
@@ -188,7 +188,7 @@ def LaplacianMatrix(con, normed=False):
 
     # 1) CALCULATE THE GRAPH LAPLACIAN MATRIX
     outdegree = con.sum(axis=1)
-    lap = - outdegree * np.identity(N, dtype=float) + con
+    lap = - outdegree * np.identity(N, dtype=np.float64) + con
 
     if normed:
         for i in range(N):

@@ -10,7 +10,7 @@ setup(
     name =  'sireneta',
     description = 'A library to study complex networks in the light of canonical propagation models.',
     url =  'https://github.com/mb-BCA/SiReNetA',
-    version =  '0.1.dev1',
+    version =  '0.1.dev2',
     license =  'Apache License 2.0',
 
     author =  'Gorka Zamora-Lopez, Matthieu Gilson',

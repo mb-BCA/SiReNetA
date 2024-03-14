@@ -123,8 +123,8 @@ __author__ = "Gorka Zamora-Lopez and Matthieu Gilson"
 __email__ = "gorka@Zamora-Lopez.xyz"
 __copyright__ = "Copyright 2024"
 __license__ = "Apache License version 2.0"
-__version__ = "0.1.dev1"
-__update__ = "06/03/2024"
+__version__ = "0.1.dev2"
+__update__ = "14/03/2024"
 
 
 
