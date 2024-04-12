@@ -69,6 +69,8 @@ def GlobalResponse(tensor):
     """
     Calculates network response over time, summed over all pair-wise responses.
 
+    TODO: Change name to NetworkResponse() ?
+
     Parameters
     ----------
     tensor : ndarray (3d) of shape (nt,N,N)
