@@ -20,7 +20,7 @@ General attributes:
 Attributes only for specific canonical models:
 
 - The leakage rate used for the simulation, $\tau$.
-- The Sigma matrix (i.e., the matrix of the initial inputs). (((We need a check that Sigma is properly normalised. )))
+- The Sigma matrix (i.e., the matrix of the initial inputs), which is equal to input time (e.g. InstantaneousInput so far, StationaryInput for MOU). (((We need a check that Sigma is properly normalised. )))
 - The "personalization vector" for the random walkers with teleportation.
 
 
@@ -35,4 +35,16 @@ I guess these are all the functions in modules *core.py*, *metrics.py* and *netm
 
 - What to do for example when we calculate surrogates? There will be plenty of redundant information wasting RAM memory, if there is an object for each surrogate realization. 
 - Besides the object class for the response matrices, there should be a second class for the time-series simulated for the nodes **x**(t). 
+
+
+### Parallelization / Optimization
+
+- Jax for faster computation of e.g. expm (`from jax.scipy.linalg import expm` instead of `from scipy.linalg import expm`)
+- joblib for parallelization on cluster? distribute 1 job per integration time point for tensor computation
+
+
+### Testing
+
+- use pytest for unitary testing of each function / object
+- organize data for testing and testing code within scripts
 

@@ -20,9 +20,9 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 	- (DONE) R(t) for the continuous diffusion.
 - Add functions to the *metrics.py* module:
 	- (DONE) To return the peak flows. I know, it is really trivial to compute but… we need to give these things in functions for beginer users.
-	- We need a function to verify the response curve has reached "zero". Not sure of the criteria that should be applied to this, specially considering the small numbers that flows tend to have. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. If the responses haven't properly decay, the function should return a warning, recommending to run longer simulations.
-	- We need a function to extract and study the evolution of the self-interactions. That is, the temporal response of a node to a perturbation on itself at time t = 0. This is in a way what Ernesto called "returnability" but we have that over time. Remind that in graphs the clustering coefficient is indeed calculated in this manner, for loops of lenght = 3, but longer loops could be included.
-	- Add a function to estimate time-to-threshold. For models that diverge.
+	- Send warning if tensor values are farther than zero for a tolerance, with good default value that can also be adjusted (WAS: We need a function to verify the response curve has reached "zero". Not sure of the criteria that should be applied to this, specially considering the small numbers that flows tend to have. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. If the responses haven't properly decay, the function should return a warning, recommending to run longer simulations.)
+	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self (WAS We need a function to extract and study the evolution of the self-interactions. That is, the temporal response of a node to a perturbation on itself at time t = 0. This is in a way what Ernesto called "returnability" but we have that over time. Remind that in graphs the clustering coefficient is indeed calculated in this manner, for loops of lenght = 3, but longer loops could be included.)
+	- Add a function to estimate time-to-threshold. For models that diverge. This is an extension of the graph distance for binary network where threshold = 1 should be the default (for discrete cascade).
 
 - (DONE) What to do about the `sigma` parameter that we only have for the MOU? It expects a matrix, not a vector of input amplitudes to the nodes.
 	- THE DECISION: For now `sigma` is called S0 with default value `S0=1`. That computes the canonical case with unit input at all nodes. `S0` is and optional parameter that accepts a number or a vector. Later, we may think of allowing a matrix again. But first, we must understand whether that makes sense for the three continuous canonical models. 	
@@ -48,11 +48,11 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 
 - Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases.
 
-- Same for function `Time2Decay()`. Not it returns the duration of the simulation in those cases.
+- (FOR LATER) Same for function `Time2Decay()` and/or `Time2Convergence()`. Should send warning when it returns the duration of the simulation in those cases???
 
 - (DONE) Add security checks at the beginning of all functions.
 
-- Switch the `dot()` operations in *simulate.py* to avoid calculating the transpose matrix. As of now, this module uses internally the dynamical systems convention while *core.py* uses graph convention. We decided to stick to the graph convention.
+- (WILL BE SOLVED WHEN SWITCHING INPUT/OUTPUT ACCORDING TO DYN SYS CONVENTIONS) Switch the `dot()` operations in *simulate.py* to avoid calculating the transpose matrix. As of now, this module uses internally the dynamical systems convention while *core.py* uses graph convention. We decided to stick to the graph convention.
 
 - (DONE) Think if we want another name for *core.py*. The module has been renamed to *responses.py*.
 
