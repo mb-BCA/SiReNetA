@@ -124,7 +124,7 @@ def Diversity(tensor):
 
     return diversity
 
-def NodeResponses(tensor, selfloops=False):
+def NodeResponses(tensor, selfloops=True):
     """
     Temporal evolution of the input and output responses for each node.
 
@@ -134,12 +134,13 @@ def NodeResponses(tensor, selfloops=False):
         Temporal evolution of the pair-wise responses, as calculated by one of
         the functions of module *responses.py*.
     selfloops : boolean
-        If `False` (default), returns the in- / out-responses of the nodes,
-        excluding the contribution of the stimulus to a node on itself. That is,
-        the column (row) summation excludes the diagonal entries $R_{ii}(t)$
-        of the response matrices.
-        If `True`, includes the self-response of the nodes, to the initial
-        stimulus applied on themselves.
+        If `True` (default), returns the in-/out-responses of the nodes,
+        summing also the self-responses: the response of a node to the
+        initial stimulus applied on itself. That is, adds the diagonal $R_{ii}(t)$
+        entries to the row and column sums.
+        If `False`, excludes the response of a node to the stimulus applied on
+        itself. Excludes the diagonal entries $R_{ii}(t)$ in the row and
+        column sums.
 
     Returns
     -------
@@ -221,80 +222,6 @@ def Time2Peak(arr, timestep):
 
     return ttp_arr
 
-def Time2Decay(arr, dt, fraction=0.99):
-    """
-    The time that links, nodes or the network need to decay to zero.
-
-    Strictly speaking, this function measures the time that the cumulative
-    flow (area under the curve) needs to reach x% of the total (cumulative)
-    value. Here 'x%' is controled by the optional parameter 'fraction'.
-    For example, 'fraction = 0.99' means the time needed to reach 99%
-    of the area under the curve, given a response curve.
-
-    The function calculates the time-to-decay either for all pair-wise
-    interactions, for the nodes or for the whole network, depending on the
-    input array given.
-    - If 'arr' is a (nt,N,N) flow tensor, the output 'ttd_arr' will be an
-    (N,N) matrix with the ttd between every pair of nodes.
-    - If 'arr' is a (nt,N) temporal flow of the N nodes, the output 'ttd_arr'
-    will be an array of length N, containing the ttd of all N nodes.
-    - If 'arr' is an array of length nt (total network flow over time), 'ttd_arr'
-    will be a scalar, indicating the time at which the whole-network flow decays.
-
-    Parameters
-    ----------
-    arr : ndarray of adaptive shape, according to the case.
-        Temporal evolution of the flow. An array of optional shapes. Either
-        (nt,N,N) for the pair-wise flows, shape (nt,N,N) for the in- or output
-        flows of nodes, or a 1D array of length nt for the network flow.
-    timestep : real valued number.
-        Sampling time-step. This has to be the time-step employed to simulate
-        the temporal evolution encoded in 'arr'.
-    fraction : scalar, optional
-        The fraction of the total area-under-the-curve to be reached.
-        For example, 'fraction = 0.99' means the time the flow needs to
-        reach 99% of the area under the curve.
-
-    Returns
-    -------
-    ttd_arr : ndarray of variable rank
-        The time(s) taken for the flows through links, nodes or the network to
-        decay. Output shape depends on input.
-    """
-
-    # 0) SECURITY CHECKS
-    ## TODO: Write a check to verify the curve(s) has (have) really decayed back
-    ## to zero. At this moment, it is the user's responsability to guarantee
-    ## that all the curves have decayed reasonably well.
-    ## The check should rise a warning to simulate for longer time.
-
-    # Check correct shape, in case input is the 3D array for the pair-wise flow
-    arr_shape = np.shape(arr)
-    if arr_shape==3:
-        if arr_shape[1] != arr_shape[2]:
-            raise ValueError("Input array not aligned. For 3D arrays shape (nt x N x N) is expected.")
-
-    # 1) Set the level of cummulative flow to be reached over time
-    targetcflow = fraction * arr.sum(axis=0)
-
-    # 2) Calculate the time the flow(s) need to decay
-    # Initialise the output array, to return the final time-point
-    ## TODO: This version iterates over all the times. This is not necessary.
-    ## We could start from the end and save plenty of iterations.
-    ttd_shape = arr_shape[1:]
-    nsteps = arr_shape[0]
-    ttd_arr = nsteps * np.ones(ttd_shape, np.int64)
-
-    # Iterate over time, calculating the cumulative flow(s)
-    cflow = arr[0].copy()
-    for t in range(1,nsteps):
-        cflow += arr[t]
-        ttd_arr = np.where(cflow < targetcflow, t, ttd_arr)
-
-    # Finally, convert the indices into integration time
-    ttd_arr = ttd_arr.astype(np.float64) * dt
-
-    return ttd_arr
 
 def AreaUnderCurve(arr, timestep, timespan='alltime'):
     """
