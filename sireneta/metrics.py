@@ -144,10 +144,10 @@ def NodeResponses(tensor, selfloops=True):
 
     Returns
     -------
-    NodeResponses : tuple contaning two ndarrays (2d) of shape (nt,N).
+    node_resps : tuple contaning two ndarrays (2d) of shape (nt,N).
         The temporal evolution of the input and output responses for all nodes.
-        `NodeResponses[0]` is the input responses into the nodes node and
-        `NodeResponses[1]` the output node responses.
+        `node_resps[0]` is the input responses into the nodes node and
+        `node_resps[1]` the output node responses.
     """
 
     # 0) SECURITY CHECKS
@@ -172,8 +172,8 @@ def NodeResponses(tensor, selfloops=True):
             inflows[:,i]  = tensor[:,:,i].sum(axis=1) - tempdiags
             outflows[:,i] = tensor[:,i,:].sum(axis=1) - tempdiags
 
-    NodeResponses = ( inflows, outflows )
-    return NodeResponses
+    node_resps = ( inflows, outflows )
+    return node_resps
 
 def Time2Peak(arr, timestep):
     """
