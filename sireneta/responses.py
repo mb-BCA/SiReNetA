@@ -415,8 +415,6 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
     """Computes the pair-wise responses over time for the leaky-cascade model.
 
     TODO: DECIDE ABOUT THE 'normed' PARAMETER.
-    TODO: SHALL WE ALLOW 'S0' TO BE A MATRIX OF (POSSIBLY CORRELATED) GAUSSIAN
-    WHITE NOISE, AS ORIGINALLY FOR THE MOU ?
 
     Given a connectivity matrix A, where Aij represents the (weighted)
     connection from i to j, the response matrices Rij(t) encode the temporal
@@ -440,11 +438,14 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
     ----------
     con : ndarray (2d) of shape (N,N).
         The connectivity matrix of the network.
-    S0 : scalar or ndarray (1d) of length N, optional
+    S0 : scalar or ndarray (1d) of length N or ndarray of shape (N,N), optional
         Amplitude of the stimuli applied to nodes at time t = 0.
         If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
         Default, `S0 = 1.0` represents a unit perturbation to all nodes.
         If a 1d-array is given, node i receives initial stimulus `S0[i]`.
+        If a 2d-array is given, node i receives initial stimulus `S0[i,i]` but
+        nodes i,j receive correlated noise as input. Hence, `S0` must be a
+        (noise) correlation matrix (symmetric matrix with all eigenvalues >= 0).
     tau : real value or ndarray (1d) of length N, optional
         The decay time-constants of the nodes. If a scalar value is entered,
         `tau = c`, then all nodes will be assigned the same value `tau[i] = 2`
@@ -487,7 +488,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
     # 0) HANDLE AND CHECK THE INPUTS
     io_helpers.validate_con(con)
     N = len(con)
-    S0 = io_helpers.validate_S0(S0,N)
+    S0mat = io_helpers.validate_S0matrix(S0,N)
     tau = io_helpers.validate_tau(tau, N)
 
     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
@@ -496,7 +497,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
 
     # Ensure all arrays are of same dtype (np.float64)
     if con.dtype != np.float64:     con = con.astype(np.float64)
-    if S0.dtype != np.float64:      S0 = S0.astype(np.float64)
+    if S0mat.dtype != np.float64:   S0mat = S0mat.astype(np.float64)
     if tau.dtype != np.float64:     tau = tau.astype(np.float64)
 
     caselist = ['regressed', 'full', 'intrinsic']
@@ -510,10 +511,10 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
     # Compute the Jacobian matrices
     jac = Jacobian_LeakyCascade(con, tau)
     jacdiag = np.diagonal(jac)
-    # Convert the stimuli into a matrix
-    if S0.ndim in [0,1]:
-        S0mat = S0 * np.identity(N, dtype=np.float64)
-    # S0mat = scipy.linalg.sqrtm(S0mat)
+    # # Convert the stimuli into a matrix
+    # if S0.ndim in [0,1]:
+    #     S0mat = S0 * np.identity(N, dtype=np.float64)
+    # # S0mat = scipy.linalg.sqrtm(S0mat)
 
     if case == 'full':
         for it in range(nt):
