@@ -177,7 +177,7 @@ def LaplacianMatrix(con, normed=False):
 
     Returns
     -------
-    lap : ndarray (2d) of shape(N,N)
+    jac : ndarray (2d) of shape(N,N)
         The graph Laplacian matrix.
     """
     # 0) HANDLE AND CHECK THE INPUTS
@@ -188,15 +188,15 @@ def LaplacianMatrix(con, normed=False):
 
     # 1) CALCULATE THE GRAPH LAPLACIAN MATRIX
     outdegree = con.sum(axis=1)
-    lap = - outdegree * np.identity(N, dtype=np.float64) + con
+    jac = - outdegree * np.identity(N, dtype=np.float64) + con
 
     if normed:
         for i in range(N):
             # Avoids NaN values in tp_matrix if node is disconnected
             if outdegree[i]:
-                lap[i] /= outdegree[i]
+                jac[i] /= outdegree[i]
 
-    return lap
+    return jac
 
 
 ## GENERATION OF THE MAIN TENSORS #############################################
