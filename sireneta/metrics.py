@@ -177,6 +177,36 @@ def NodeResponses(tensor, selfloops=True):
     node_resps = ( inflows, outflows )
     return node_resps
 
+def SelfResponses(tensor):
+    """
+    Temporal evolution of the responses of nodes due to stimulus on themselves.
+
+    Parameters
+    ----------
+    tensor : ndarray (3d) of shape (nt,N,N)
+        Temporal evolution of the pair-wise responses, as calculated by one of
+        the functions of module *responses.py*.
+
+    Returns
+    -------
+    self_resps : ndarray (2d) of shape (nt,N).
+        The temporal evolution of the node responses to stimulus on themselves.
+    """
+
+    # 0) SECURITY CHECKS
+    # Check the input tensor has the correct 3D shape
+    arr_shape = np.shape(tensor)
+    if (len(arr_shape) != 3) or (arr_shape[1] != arr_shape[2]):
+        raise ValueError("Input array not aligned. A 3D array of shape (nt x N x N) expected.")
+
+    # 1) Calculate the self reponses
+    nt, N,N = arr_shape
+    self_resps = np.zeros((nt,N), np.float64)
+    for i in range(N):
+        self_resps[:,i] = tensor[:,i,i]
+
+    return self_resps
+
 def Time2Peak(arr, timestep):
     """
     The time that links, nodes or the network need to reach maximal response.
