@@ -32,8 +32,8 @@ NodeResponses
     Temporal evolution of the input and output responses for each node.
 TimeToPeak
     The time that links, nodes or the network need to reach maximal response.
-TimeToDecay
-    The time that links, nodes or the network need to decay to zero.
+SelfResponses
+    Temporal evolution of the responses of nodes due to stimulus on themselves.
 AreaUnderCurve
     Total amount of response accumulated over time.
 
