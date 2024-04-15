@@ -126,7 +126,7 @@ def Diversity(tensor):
 
     return diversity
 
-def NodeResponses(tensor, selfloops=True):
+def NodeResponses(tensor, selfresp=True):
     """
     Temporal evolution of the input and output responses for each node.
 
@@ -135,7 +135,7 @@ def NodeResponses(tensor, selfloops=True):
     tensor : ndarray (3d) of shape (nt,N,N)
         Temporal evolution of the pair-wise responses, as calculated by one of
         the functions of module *responses.py*.
-    selfloops : boolean
+    selfresp : boolean
         If `True` (default), returns the in-/out-responses of the nodes,
         summing also the self-responses: the response of a node to the
         initial stimulus applied on itself. That is, adds the diagonal $R_{ii}(t)$
@@ -150,6 +150,10 @@ def NodeResponses(tensor, selfloops=True):
         The temporal evolution of the input and output responses for all nodes.
         `node_resps[0]` is the input responses into the nodes node and
         `node_resps[1]` the output node responses.
+
+    See Also
+    --------
+    SelfResponses : Temporal evolution of the responses of nodes due to stimulus on themselves.
     """
 
     # 0) SECURITY CHECKS
@@ -159,12 +163,12 @@ def NodeResponses(tensor, selfloops=True):
         raise ValueError("Input array not aligned. A 3D array of shape (nt x N x N) expected.")
 
     # 1) Calculate the input and output node properties
-    # When self-loops shall be included to the temporal node responses
-    if selfloops:
+    # When self-responses shall be included to the temporal node responses
+    if selfresp:
         inflows = tensor.sum(axis=1)
         outflows = tensor.sum(axis=2)
 
-    # Excluding the self-flows a node due to inital perturbation on itself.
+    # Excluding the self-responses a node due to inital perturbation on itself.
     else:
         nt, N,N = arr_shape
         inflows = np.zeros((nt,N), np.float64)
@@ -191,6 +195,10 @@ def SelfResponses(tensor):
     -------
     self_resps : ndarray (2d) of shape (nt,N).
         The temporal evolution of the node responses to stimulus on themselves.
+
+    See Also
+    --------
+    NodeResponses : Temporal evolution of the input and output responses for each node.
     """
 
     # 0) SECURITY CHECKS
@@ -253,7 +261,6 @@ def Time2Peak(arr, timestep):
     ttp_arr = timestep * ttp_arr
 
     return ttp_arr
-
 
 def AreaUnderCurve(arr, timestep, timespan='alltime'):
     """
