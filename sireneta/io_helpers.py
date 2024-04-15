@@ -43,6 +43,7 @@ import numpy.random
 
 
 ## INPUT HANDLING FUNCTIONS ###################################################
+## TODO: These functions should be named 'validate_xxxx()' or 'check_xxxxx()' ?
 def validate_con(a):
     """
     THIS FUNCTION DOES NOT RETURN ANYTHING. IT ONLY CHECKS THE MATRIX
@@ -95,17 +96,45 @@ def validate_S0(a, n_nodes):
         "'S0' must be either scalar or 1-dimensional of length N, but shape %s found"
         %str(np.shape(a)) )
 
-    # # Make sure 'S0' is a 1D array or a 2D square array
-    # if np.ndim(a)== 1:
-    #     pass
-    # # Make sure 'S0' is a 2D array
-    # elif np.ndim(a)==2:
-    #     conshape = np.shape(a)
-    #     if conshape[0]==conshape[1]: pass
-    # else:
-    #     raise ValueError(
-    #     "'S0' must be either scalar, 1-dimensional of length N or 2-dimensional square array, but shape %s found"
-    #     %str(np.shape(a)) )
+    return a
+
+def validate_S0matrix(a, n_nodes):
+    """
+    """
+    zero_tol = 1e-12
+
+    # Check if 'S0' is a number or a numpy array
+    if isinstance(a, numbers.Number) and type(a) != bool:
+        if a < -zero_tol:
+            raise ValueError("'S0' as numerical value entered, must be positive")
+        else:
+            a = a * np.identity(n_nodes, np.float64)
+    elif isinstance(a, np.ndarray): pass
+    else:
+        raise TypeError(
+        "'S0' must be either scalar or numpy array, but %s found" %type(a) )
+
+    # If 'S0' is an array, convert input to a matrix
+    if np.ndim(a)== 1:
+        amin = a.min()
+        if amin < -zero_tol:
+            raise ValueError("'S0' as 1d-array entered, all values must be positive")
+        else:
+            a = a * np.identity(n_nodes, np.float64)
+    # If 'S0' is a 2D array, make sure it is a square matrix
+    elif np.ndim(a)==2:
+        conshape = np.shape(a)
+        if conshape[0]!=conshape[1]:
+            raise ValueError( "'S0' not a square matrix, shape %s found" %str(np.shape(a)) )
+    else:
+        raise ValueError( "'S0' not a square matrix, shape %s found" %str(np.shape(a)) )
+
+    # Finally, make sure all eigenvalues are positive
+    evs = numpy.linalg.eigvals(a)
+    evmin = evs.min()
+    if evmin < -zero_tol:
+        raise ValueError(
+        "'S0' not a correlation matrix, at least one negative eigenvalue found: %f." %evmin )
 
     return a
 
