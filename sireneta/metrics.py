@@ -264,18 +264,18 @@ def Time2Peak(arr, timestep):
 
 def AreaUnderCurve(arr, timestep, timespan='alltime'):
     """
-    Total amount of response accumulated over time.
+    The amount of response accumulated over time.
 
     The function calculates the area-under-the-curve for the response curves over
     time. It does so for all pair-wise interactions, for the nodes or for
     the whole network, depending on the input array given.
 
-    - If 'arr' is a (nt,N,N) flow tensor, the output 'totalflow' will be an
+    - If 'arr' is a (nt,N,N) flow tensor, the output 'integral' will be an
     (N,N) matrix with the accumulated flow passed between every pair of nodes.
-    - If 'arr' is a (nt,N) temporal flow of the N nodes, the output 'totalflow'
+    - If 'arr' is a (nt,N) temporal flow of the N nodes, the output 'integral'
     will be an array of length N, containing the accumulated flow passed through
     all the nodes.
-    - If 'arr' is an array of length nt (total network flow over time), 'totalflow'
+    - If 'arr' is an array of length nt (total network flow over time), 'integral'
     will be a scalar, indicating the total amount of flow that went through the
     whole network.
 
@@ -299,8 +299,8 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
 
     Returns
     -------
-    totalflow : ndarray of variable rank
-        The accumulated flow (area-under-the-curve) between pairs of nodes,
+    integral : ndarray of variable rank
+        The accumulated response (area-under-the-curve) between pairs of nodes,
         by nodes or by the whole network, over a period of time.
     """
 
@@ -322,7 +322,7 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
     # 1) DO THE CALCULATIONS
     # 1.1) Easy case. Integrate area-under-the-curve along whole time interval
     if timespan == 'alltime':
-        totalflow = timestep * arr.sum(axis=0)
+        integral = timestep * arr.sum(axis=0)
 
     # 1.2) Integrate area-under-the-curve until or from the peak time
     else:
@@ -331,7 +331,7 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
 
         # Initialise the final array
         tf_shape = arr_shape[1:]
-        totalflow = np.zeros(tf_shape, np.float64)
+        integral = np.zeros(tf_shape, np.float64)
 
         # Sum the flow(s) over time, only in the desired time interval
         nsteps = arr_shape[0]
@@ -342,12 +342,12 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
             elif timespan == 'decay':
                 counts = np.where(t < tpidx, False, True)
             # Sum the flow at the given iteration, if accepted
-            totalflow += (counts * arr[t])
+            integral += (counts * arr[t])
 
         # Finally, normalise the integral by the time-step
-        totalflow *= timestep
+        integral *= timestep
 
-    return totalflow
+    return integral
 
 
 
