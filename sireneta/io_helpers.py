@@ -172,12 +172,12 @@ def validate_tau(a, n_nodes):
 #             lname_a = name
 #
 #     globaldict = globals()
-#     print(len(globaldict))
+#     prround(len(globaldict))
 #     for name in globaldict.keys():
 #         if id(globaldict[name]) == id_a:
 #             gname_a = name
 #
-#     print(lname_a, gname_a)
+#     prround(lname_a, gname_a)
 #
 #     # Make sure 'a' is a numpy array, of np.float64 dtype
 #     if isinstance(a, numbers.Number):
@@ -214,7 +214,7 @@ def validate_noise(a, n_nodes, tmax, timestep):
             # If positive scalar given, generate the array for the noise
             namp = a
             nnorm = np.sqrt(2.0 * namp * timestep)
-            nt = int(tmax / timestep) + 1
+            nt = round(tmax / timestep) + 1
             a = nnorm * numpy.random.randn(nt, n_nodes)
     # Make sure 'noise' is a numpy array, of np.float64 dtype
     elif isinstance(a, np.ndarray):
