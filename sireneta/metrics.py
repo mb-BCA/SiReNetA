@@ -165,8 +165,8 @@ def NodeResponses(tensor, selfresp=True):
     # 1) Calculate the input and output node properties
     # When self-responses shall be included to the temporal node responses
     if selfresp:
-        inflows = tensor.sum(axis=1)
-        outflows = tensor.sum(axis=2)
+        inflows = tensor.sum(axis=2)
+        outflows = tensor.sum(axis=1)
 
     # Excluding the self-responses a node due to inital perturbation on itself.
     else:
@@ -175,8 +175,8 @@ def NodeResponses(tensor, selfresp=True):
         outflows = np.zeros((nt,N), np.float64)
         for i in range(N):
             tempdiags = tensor[:,i,i]
-            inflows[:,i]  = tensor[:,:,i].sum(axis=1) - tempdiags
-            outflows[:,i] = tensor[:,i,:].sum(axis=1) - tempdiags
+            inflows[:,i]  = tensor[:,i,:].sum(axis=1) - tempdiags
+            outflows[:,i] = tensor[:,:,i].sum(axis=1) - tempdiags
 
     node_resps = ( inflows, outflows )
     return node_resps
