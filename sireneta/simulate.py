@@ -350,21 +350,23 @@ def LeakyCascade(con, X0=1.0, tau=1.0, noise=None, tmax=10, timestep=0.01):
 
     return Xdot
 
-def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
+def ContDiffusion(con, X0=1.0, alpha=1.0, noise=None, tmax=10, timestep=0.01):
     """Simulates the temporal evolution of the nodes for the continuous diffusion.
 
     It solves the differential equation for the simplest possible linear
     dynamical (propagation) linear model of nodes coupled via diffusive coupling,
     with no local dynamics at the nodes.
 
-        xdot_i = A_ij * (x_i - x_j) .
+        xdot_i = alpha * A_ij * (x_i - x_j) .
 
     In matrix form, this equation is represented as:
 
-        xdot(t) = -D x(t) + A x(t)  =  L x(t),
+        xdot(t) = -D x(t) + A x(t) =  L x(t),
 
     where D is the diagonal matrix with the input degrees ink_i in the diagonal
-    and L = -D + A is the graph Laplacian matrix.
+    and L = -D + A is the graph Laplacian matrix. This equation is also known
+    as the heat equation for graphs, where `alpha` is a thermal diffusivite
+    parameter controlling for how fast heat propagates.
 
     Parameters
     ----------
@@ -375,6 +377,8 @@ def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
         `X0 = c`, all nodes are initialised as `X0[i] = c` (same initial conditions).
         Default value, `X0 = 1.0`. If a 1d-array is entered, each node i is
         assigned initial value `X0[i]`.
+    alpha : scalar.
+        Diffusivity or thermal diffusitivity parameter.
     noise : None, scalar or ndarray (2d) of shape (nt,N), optional
         Additive noise. If `noise = None` simulation is run without noise.
         If scalar `noise = c`, a Gaussian white noise, centered at zero and
@@ -411,6 +415,7 @@ def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
     # Ensure all arrays are of same dtype (float64)
     if con.dtype != np.float64:    con = con.astype(np.float64)
     if X0.dtype != np.float64:     X0 = X0.astype(np.float64)
+    alpha = float(alpha)
     if noise is not None and noise.dtype != np.float64:
         noise = noise.astype(np.float64)
 
@@ -431,7 +436,7 @@ def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
             xcoup = np.dot(con,Xpre) - ink * Xpre
             # xcoup = np.dot(Lmat, Xpre)
             # Integration step
-            Xdot[t] = Xpre + timestep * xcoup
+            Xdot[t] = Xpre + timestep * alpha * xcoup
     else:
         for t in range(1,nt):
             Xpre = Xdot[t-1]
@@ -439,7 +444,7 @@ def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
             xcoup = np.dot(con,Xpre) - ink * Xpre
             # xcoup = np.dot(Lmat, Xpre)
             # Integration step
-            Xdot[t] = Xpre + timestep * xcoup + noise[t]
+            Xdot[t] = Xpre + timestep * alpha * xcoup + noise[t]
 
     return Xdot
 
