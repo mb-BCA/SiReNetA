@@ -415,7 +415,7 @@ def ContDiffusion(con, X0=1.0, alpha=1.0, noise=None, tmax=10, timestep=0.01):
     # Ensure all arrays are of same dtype (float64)
     if con.dtype != np.float64:    con = con.astype(np.float64)
     if X0.dtype != np.float64:     X0 = X0.astype(np.float64)
-    alpha = float(alpha)
+    alpha = np.float64(alpha)
     if noise is not None and noise.dtype != np.float64:
         noise = noise.astype(np.float64)
 
