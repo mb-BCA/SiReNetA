@@ -95,16 +95,14 @@ def DiscreteCascade(con, X0=1.0, tmax=10):
     if X0.dtype != np.float64:     X0 = X0.astype(np.float64)
 
     # 1) PREPARE FOR THE SIMULATION
-    # Tanspose the connectivity matrix
-    conT = np.copy(con.T, order='C')
     # Initialise the output array and enter the initial conditions
-    nt = int(tmax) + 1
+    nt = round(tmax) + 1
     Xt = np.zeros((nt,N), np.float64)
     Xt[0] = X0
 
     # 2) RUN THE SIMULATION
     for t in range(1,nt):
-        Xt[t] = np.dot(conT, Xt[t-1])
+        Xt[t] = np.dot(con, Xt[t-1])
 
     return Xt
 
@@ -135,8 +133,8 @@ def RandomWalk(con, X0=1.0, tmax=10):
     Returns
     -------
     Xt : ndarray (2d) of shape (tmax+1,N)
-        Time-courses of the N nodes. Xt[t,i] is the expected number of walker
-        in node i at time t.
+        Time-courses of the N nodes. Xt[t,j] is the expected number of walker
+        in node j at time t.
     """
     # 0) HANDLE AND CHECK THE INPUTS
     io_helpers.validate_con(con)
@@ -152,10 +150,11 @@ def RandomWalk(con, X0=1.0, tmax=10):
     # 1) PREPARE FOR THE SIMULATION
     # Compute the transition probability matrix
     N = len(con)
-    Tmat = con / con.sum(axis=0)    # Assumes Aij = 1 if i -> j
-    # Tmat = con / con.sum(axis=1)    # Assumes Aij = 1 if j -> i
+    Tmat = con / con.sum(axis=0)    # Assumes Aij = 1 if j -> i
+    if np.isnan(Tmat.min()):
+        Tmat[np.isnan(Tmat)] = 0
     # Initialise the output array and enter the initial conditions
-    nt = int(tmax) + 1
+    nt = round(tmax) + 1
     Xt = np.zeros((nt,N), np.float64)
     Xt[0] = X0
 
@@ -206,7 +205,7 @@ def ContCascade(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
 
     NOTE
     ----
-    Total number of integration steps (samples) is `nt = int(tmax*timestep) + 1`.
+    Total number of integration steps (samples) is `nt = round(tmax*timestep) + 1`.
     - Simulation runs from t=0 to t=tmax.
     - Integration goes from it=0 to it=nt, with `Xdot[0] = X0`.
     - The sampled time points are `tpoints = np.arange(0,tmax+timestep,timestep)`
@@ -228,11 +227,9 @@ def ContCascade(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
         noise = noise.astype(np.float64)
 
     # 1) PREPARE FOR THE SIMULATION
-    # Transpose the connectivity matrix
-    conT = np.copy(con.T, order='C')
     # Initialise the output array
-    nt = int(tmax / timestep) + 1
-    Xdot = np.zeros((nt, N), np.float64, order='C')
+    nt = round(tmax / timestep) + 1
+    Xdot = np.zeros((nt, N), dtype=np.float64, order='C')
     # Enter the initial conditions
     Xdot[0] = X0
 
@@ -241,14 +238,14 @@ def ContCascade(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
         for t in range(1,nt):
             Xpre = Xdot[t-1]
             # Calculate the input to nodes due to couplings
-            xcoup = np.dot(conT,Xpre)
+            xcoup = np.dot(con,Xpre)
             # Integration step
-            Xdot[t] = Xpre + timestep * xcoup #+ noise[t]
+            Xdot[t] = Xpre + timestep * xcoup
     else:
         for t in range(1,nt):
             Xpre = Xdot[t-1]
             # Calculate the input to nodes due to couplings
-            xcoup = np.dot(conT,Xpre)
+            xcoup = np.dot(con,Xpre)
             # Integration step
             Xdot[t] = Xpre + timestep * xcoup + noise[t]
 
@@ -280,7 +277,7 @@ def LeakyCascade(con, X0=1.0, tau=1.0, noise=None, tmax=10, timestep=0.01):
         assigned initial value `X0[i]`.
     tau : real value or ndarray (1d) of length N, optional
         The decay time-constants of the nodes. If a scalar value is entered,
-        `tau = c`, then all nodes will be assigned the same value `tau[i] = 2`
+        `tau = c`, then all nodes will be assigned the same value `tau[j] = 2`
         (identical nodes). If an 1d-array is entered, each node i is assigned
         decay time-constant `tau[i]`. Default `tau = 1.0` is probably too large
         for most real networks and will diverge. If so, enter a `tau` smaller
@@ -303,7 +300,7 @@ def LeakyCascade(con, X0=1.0, tau=1.0, noise=None, tmax=10, timestep=0.01):
 
     NOTE
     ----
-    Total number of integration steps (samples) is `nt = int(tmax*timestep) + 1`.
+    Total number of integration steps (samples) is `nt = round(tmax*timestep) + 1`.
     - Simulation runs from t=0 to t=tmax.
     - Integration goes from it=0 to it=nt, with `Xdot[0] = X0`.
     - The sampled time points are `tpoints = np.arange(0,tmax+timestep,timestep)`
@@ -327,12 +324,10 @@ def LeakyCascade(con, X0=1.0, tau=1.0, noise=None, tmax=10, timestep=0.01):
         noise = noise.astype(np.float64)
 
     # 1) PREPARE FOR THE SIMULATION
-    # Transpose the connectivity matrix
-    conT = np.copy(con.T, order='C')
     # Conver the time-constants into decay rations
     alphas = 1./tau
     # Initialise the output array
-    nt = int(tmax / timestep) + 1
+    nt = round(tmax / timestep) + 1
     Xdot = np.zeros((nt, N), np.float64, order='C')
     # Enter the initial conditions
     Xdot[0] = X0
@@ -342,14 +337,14 @@ def LeakyCascade(con, X0=1.0, tau=1.0, noise=None, tmax=10, timestep=0.01):
         for t in range(1,nt):
             Xpre = Xdot[t-1]
             # Calculate the input to nodes due to couplings
-            xcoup = np.dot(conT,Xpre)
+            xcoup = np.dot(con,Xpre)
             # Integration step
             Xdot[t] = Xpre + timestep * ( -1.0*alphas * Xpre + xcoup ) #+ noise[t]
     else:
         for t in range(1,nt):
             Xpre = Xdot[t-1]
             # Calculate the input to nodes due to couplings
-            xcoup = np.dot(conT,Xpre)
+            xcoup = np.dot(con,Xpre)
             # Integration step
             Xdot[t] = Xpre + timestep * ( -1.0*alphas * Xpre + xcoup ) + noise[t]
 
@@ -398,7 +393,7 @@ def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
 
     NOTE
     ----
-    Total number of integration steps (samples) is `nt = int(tmax*timestep) + 1`.
+    Total number of integration steps (samples) is `nt = round(tmax*timestep) + 1`.
     - Simulation runs from t=0 to t=tmax.
     - Integration goes from it=0 to it=nt, with `Xdot[0] = X0`.
     - The sampled time points are `tpoints = np.arange(0,tmax+timestep,timestep)`
@@ -420,12 +415,10 @@ def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
         noise = noise.astype(np.float64)
 
     # 1) PREPARE FOR THE SIMULATION
-    # Transpose the connectivity matrix
-    conT = np.copy(con.T, order='C')
-    ink = conT.sum(axis=1)
-    # Lmat = - ink * np.identity(N, dtype=np.float64) + conT
+    ink = con.sum(axis=0)
+    # Lmat = - ink * np.identity(N, dtype=np.float64) + con
     # Initialise the output array
-    nt = int(tmax / timestep) + 1
+    nt = round(tmax / timestep) + 1
     Xdot = np.zeros((nt, N), np.float64, order='C')
     # Enter the initial conditions
     Xdot[0] = X0
@@ -435,15 +428,15 @@ def ContDiffusion(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
         for t in range(1,nt):
             Xpre = Xdot[t-1]
             # Calculate the input to nodes due to couplings
-            xcoup = np.dot(conT,Xpre) - ink * Xpre
+            xcoup = np.dot(con,Xpre) - ink * Xpre
             # xcoup = np.dot(Lmat, Xpre)
             # Integration step
-            Xdot[t] = Xpre + timestep * xcoup #+ noise[t]
+            Xdot[t] = Xpre + timestep * xcoup
     else:
         for t in range(1,nt):
             Xpre = Xdot[t-1]
             # Calculate the input to nodes due to couplings
-            xcoup = np.dot(conT,Xpre) - ink * Xpre
+            xcoup = np.dot(con,Xpre) - ink * Xpre
             # xcoup = np.dot(Lmat, Xpre)
             # Integration step
             Xdot[t] = Xpre + timestep * xcoup + noise[t]
