@@ -47,6 +47,7 @@ theory and the analysis of complex networks" arXiv:2307.02449 (2023).
 DOI: `https://doi.org/10.48550/arXiv.2307.02449
 <https://doi.org/10.48550/arXiv.2307.02449>`_
 """
+# TODO: Shall we call these functions as Sim_DiscreteCascade(), Sim_RandomWalk, etc?
 
 # Standard libary imports
 
