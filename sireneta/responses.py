@@ -78,13 +78,13 @@ from . import io_helpers
 def TransitionMatrix(con, rwcase='simple'):
     """Returns the transition probability matrix for random walks.
 
-    TODO: ADD RANDOM WALK WITH TELEPORTATION
+    TODO: ADD RANDOM WALK WITH TELEPORTATION AND OTHER BIASED RW MODELS.
 
     - If rwcase='simple'
     Given a connectivity matrix A, where Aij represents the (weighted)
-    connection from i to j, the transition probability matrix for a simple
-    random walk is computed as Tij = Aij / deg(i), where deg(i) is the output
-    (weighted) degree of node i.
+    connection from j to i, the transition probability matrix for a simple
+    random walk is computed as Tij = Aij / deg(j), where deg(j) is the output
+    (weighted) degree of node j.
 
     Parameters
     ----------
@@ -116,20 +116,18 @@ def TransitionMatrix(con, rwcase='simple'):
         raise ValueError( "Please enter one of accepted cases: %s" %str(caselist) )
 
     # 1) COMPUTE THE TRANSITION PROBABILITY MATRIX
-    tp_matrix = con.copy().astype(np.float64)
     if rwcase=='simple':
-        outdegree = con.sum(axis=1)
-        for i in range(N):
-            # Avoids NaN values in tp_matrix if node is disconnected
-            if outdegree[i]:
-                tp_matrix[i] = con[i] / outdegree[i]
+        tpmat = con / con.sum(axis=0)
+        # Correct for sink nodes, if any (nodes with no outputs)
+        if np.isnan(tpmat.min()):
+            tpmat[np.isnan(tpmat)] = 0
 
-    return tp_matrix
+    return tpmat
 
 def Jacobian_LeakyCascade(con, tau):
     """Calculates the Jacobian matrix for the leaky-cascade dynamical system.
 
-    Note: this is the same as the Ornstein-Uhlenbeck process on a network.
+    NOTE: This is the same as the Ornstein-Uhlenbeck process on a network.
 
     TODO: RETHINK THE NAME OF THIS FUNCTION. MERGE DIFFERENT JACOBIAN GENERATOR
     FUNCTIONS INTO A SINGLE FUNCTION !?
@@ -187,14 +185,14 @@ def LaplacianMatrix(con, normed=False):
     N = len(con)
 
     # 1) CALCULATE THE GRAPH LAPLACIAN MATRIX
-    outdegree = con.sum(axis=1)
-    jac = - outdegree * np.identity(N, dtype=np.float64) + con
+    outdeg = con.sum(axis=0)
+    jac = - outdeg * np.identity(N, dtype=np.float64)  +  con
 
     if normed:
-        for i in range(N):
-            # Avoids NaN values in tp_matrix if node is disconnected
-            if outdegree[i]:
-                jac[i] /= outdegree[i]
+        jac /= outdeg
+        # Avoid NaN values in tpmat if there are disconnected nodes
+        if np.isnan(jac.min()):
+            jac[np.isnan(jac)] = 0
 
     return jac
 
@@ -208,8 +206,8 @@ def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
     """Computes the pair-wise responses over time for the discrete cascade model.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
-    connection from i to j, the response matrices Rij(t) encode the temporal
-    response observed at node j due to a short stimulus applied on node i at
+    connection from j to i, the response matrices Rij(t) encode the temporal
+    response observed at node i due to a short stimulus applied on node j at
     time t=0.
     The discrete cascade is the simplest linear propagation model for
     DISCRETE VARIABLE and DISCRETE TIME in a network. It is represented by
@@ -229,7 +227,7 @@ def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
         Amplitude of the stimuli applied to nodes at time t = 0.
         If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
         Default, `S0 = 1.0` represents a unit perturbation to all nodes.
-        If a 1d-array is given, node i receives initial stimulus `S0[i]`.
+        If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
     tmax : integer, optional
         The duration of the simulation, number of discrete time steps.
 
@@ -238,7 +236,7 @@ def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
     resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
-        the response of node j at time t, due to an initial perturbation on i.
+        the response of node i at time t, due to an initial perturbation on j.
      """
     # 0) HANDLE AND CHECK THE INPUTS
     io_helpers.validate_con(con)
@@ -260,7 +258,8 @@ def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
 
     # 2) COMPUTE THE PAIR-WISE RESPONSE MATRICES OVER TIME
     for t in range(1,nt):
-        resp_matrices[t] = np.matmul(resp_matrices[t-1], con)
+        # resp_matrices[t] = np.matmul(resp_matrices[t-1], con)
+        resp_matrices[t] = np.matmul(con, resp_matrices[t-1])
 
     return resp_matrices
 
@@ -268,10 +267,10 @@ def Resp_RandomWalk(con, S0=1, tmax=10):
     """Computes the pair-wise responses over time for the simple random walk model.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
-    connection from i to j, the transition probability matrix is computed as
-    Tij = Aij / deg(i), where deg(i) is the output (weighted) degree of node i.
+    connection from j to i, the transition probability matrix is computed as
+    Tij = Aij / deg(j), where deg(j) is the output (weighted) degree of node j.
     The response matrices Rij(t) encode the temporal response observed at
-    node j due to a short stimulus applied on node i at time t=0.
+    node i due to a short stimulus applied on node j at time t=0.
     The random walk is the simplest linear propagation model for DISCRETE
     VARIABLE and DISCRETE TIME in a network. It is represented by the following
     iterative equation:
@@ -290,7 +289,7 @@ def Resp_RandomWalk(con, S0=1, tmax=10):
         Number of walkers seed at every node, at time t = 0. If scalar value
         given, `S0 = c`, all nodes are initialised as `S0[i] = c`.
         Default, `S0 = 1.0` represents one agent per node. If a 1d-array is
-        given, node i starts with `S0[i]` walkers.
+        given, then `S0[i]` walkers start from node i.
     tmax : integer, optional
         The duration of the simulation, number of discrete time steps.
 
@@ -298,8 +297,8 @@ def Resp_RandomWalk(con, S0=1, tmax=10):
     -------
     resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
-        contains the matrix of inputs. Entry `resp_matrices[t,i,j]` is the
-        response of node j at time t, due to the initial perturbation on i.
+        contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
+        the response of node i at time t, due to an initial perturbation on j.
     """
     # 0) HANDLE AND CHECK THE INPUTS
     io_helpers.validate_con(con)
@@ -323,7 +322,7 @@ def Resp_RandomWalk(con, S0=1, tmax=10):
 
     # 2) COMPUTE THE PAIR-WISE RESPONSE MATRICES OVER TIME
     for t in range(1,nt):
-        resp_matrices[t] = np.matmul(resp_matrices[t-1], tpmatrix)
+        resp_matrices[t] = np.matmul(tpmatrix, resp_matrices[t-1])
 
     return resp_matrices
 
@@ -337,8 +336,8 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
     WHITE NOISE, AS ORIGINALLY FOR THE MOU ?
 
     Given a connectivity matrix A, where Aij represents the (weighted)
-    connection from i to j, the response matrices Rij(t) encode the temporal
-    response observed at node j due to a short stimulus applied on node i at
+    connection from j to i, the response matrices Rij(t) encode the temporal
+    response observed at node i due to a short stimulus applied on node j at
     time t=0.
     The continuous-cascade is the simplest linear propagation model for
     CONTINUOUS VARIABLE and CONTINUOUS TIME in a network. It is represented by
@@ -358,7 +357,7 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
         Amplitude of the stimuli applied to nodes at time t = 0.
         If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
         Default, `S0 = 1.0` represents a unit perturbation to all nodes.
-        If a 1d-array is given, node i receives initial stimulus `S0[i]`.
+        If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
     tmax : scalar, optional
         Duration of the simulation, arbitrary time units.
     timestep : scalar, optional
@@ -367,9 +366,9 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
     Returns
     -------
     resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
-        Temporal evolution of the pair-wise responses. Entries
-        `resp_matrices[t,i,j]` represent the response of node j at time t, due
-        to an initial perturbation on i.
+        Temporal evolution of the pair-wise responses. The first time point
+        contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
+        the response of node i at time t, due to an initial perturbation on j.
 
     NOTE
     ----
@@ -406,7 +405,7 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
         # Calculate the Green's function at time t.
         greenf_t = scipy.linalg.expm(con * t)
         # Calculate the pair-wise responses at time t.
-        resp_matrices[it] = np.matmul(S0mat, greenf_t)
+        resp_matrices[it] = np.matmul(greenf_t, S0mat)
 
     return resp_matrices
 
@@ -417,8 +416,8 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
     TODO: DECIDE ABOUT THE 'normed' PARAMETER.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
-    connection from i to j, the response matrices Rij(t) encode the temporal
-    response observed at node j due to a short stimulus applied on node i at
+    connection from j to i, the response matrices Rij(t) encode the temporal
+    response observed at node i due to a short stimulus applied on node j at
     time t=0.
     The leaky-cascade is the time-continuous and variable-continuous linear
     propagation model represented by the following differential equation:
@@ -442,7 +441,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
         Amplitude of the stimuli applied to nodes at time t = 0.
         If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
         Default, `S0 = 1.0` represents a unit perturbation to all nodes.
-        If a 1d-array is given, node i receives initial stimulus `S0[i]`.
+        If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
         If a 2d-array is given, node i receives initial stimulus `S0[i,i]` but
         nodes i,j receive correlated noise as input. Hence, `S0` must be a
         (noise) correlation matrix (symmetric matrix with all eigenvalues >= 0).
@@ -459,9 +458,9 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
         Temporal step (resolution) between consecutive calculations of responses.
     case : string (optional)
         - 'full' Computes the responses a given by the Green's function of the
-        Jacobian of the system: e^{Jt} with J = - I / tau + A.
+        Jacobian of the system: e^{Jt} with J = - I/tau + A.
         - 'intrinsic' Computes the trivial responses due to the leakage through
-        the nodes: e^{J0t} with J0 = I / tau. This represents a 'null' case where
+        the nodes: e^{J0t} with J0 = I/tau. This represents a 'null' case where
         the network is empty (has no links) and the initial inputs passively
         leak through the nodes without propagating.
         - 'regressed' Computes the network responses due to the presence of the
@@ -474,9 +473,9 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
     Returns
     -------
     resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
-        Temporal evolution of the pair-wise responses. Entries
-        `resp_matrices[t,i,j]` represent the response of node j at time t, due
-        to an initial perturbation on i.
+        Temporal evolution of the pair-wise responses. The first time point
+        contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
+        the response of node i at time t, due to an initial perturbation on j.
 
     NOTE
     ----
@@ -522,7 +521,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
             # Calculate the Green's function at time t
             green_t = scipy.linalg.expm(jac * t)
             # Calculate the pair-wise responses at time t
-            resp_matrices[it] = np.matmul( S0mat, green_t )
+            resp_matrices[it] = np.matmul( green_t, S0mat )
 
     elif case == 'intrinsic':
         for it in range(nt):
@@ -530,7 +529,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
             # Calculate the Green's function (of an empty graph) at time t
             greendiag_t = np.diag( np.exp(jacdiag * t) )
             # Calculate the pair-wise responses at time t
-            resp_matrices[it] = np.matmul( S0mat, greendiag_t)
+            resp_matrices[it] = np.matmul( greendiag_t, S0mat )
 
     elif case == 'regressed':
         for it in range(nt):
@@ -540,7 +539,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
             # Calculate the Green's function (of an empty graph) at time t
             greendiag_t = np.diag( np.exp(jacdiag * t) )
             # Calculate the pair-wise responses at time t
-            resp_matrices[it] = np.matmul( S0mat, green_t - greendiag_t )
+            resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
     # 2.2) Normalise by the scaling factor
     if normed:
@@ -555,10 +554,11 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
 
     TODO: SHALL WE ALLOW 'S0' TO BE A MATRIX OF (POSSIBLY CORRELATED) GAUSSIAN
     WHITE NOISE, AS ORIGINALLY FOR THE MOU ?
+    TODO: SHALL WE ADD THE alpha DIFFUSIVITY PARAMETER ?
 
     Given a connectivity matrix A, where Aij represents the (weighted)
-    connection from i to j, the response matrices Rij(t) encode the temporal
-    response observed at node j due to a short stimulus applied on node i at
+    connection from j to i, the response matrices Rij(t) encode the temporal
+    response observed at node i due to a short stimulus applied on node j at
     time t=0.
     The continuous diffusion is the simplest time-continuous and variable-
     continuous linear propagation model with diffusive coupling. It is
@@ -569,7 +569,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
     where D is a diagonal matrix containing the (output) degrees of the nodes
     in the diagonal, and L = -D + A is the graph Laplacian matrix. This model
     is reminiscent of the continuous leaky cascade but considering that
-    tau(i) = 1./deg(i). As such, the input and the leaked flows are balanced
+    tau(i) = 1.0/deg(i). As such, the input and the leaked flows are balanced
     at each node.
 
     Parameters
@@ -580,7 +580,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
         Amplitude of the stimuli applied to nodes at time t = 0.
         If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
         Default, `S0 = 1.0` represents a unit perturbation to all nodes.
-        If a 1d-array is given, node i receives initial stimulus `S0[i]`.
+        If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
     tmax : scalar, optional
         Duration of the simulation, arbitrary time units.
     timestep : scalar, optional
@@ -601,9 +601,9 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
     Returns
     -------
     resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
-        Temporal evolution of the pair-wise responses. Entries
-        `resp_matrices[t,i,j]` represent the response of node j at time t, due
-        to an initial perturbation on i.
+        Temporal evolution of the pair-wise responses. The first time point
+        contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
+        the response of node i at time t, due to an initial perturbation on j.
 
     NOTE
     ----
@@ -652,7 +652,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
             # Calculate the Green's function at time t
             green_t = scipy.linalg.expm(jac * t)
             # Calculate the pair-wise responses at time t
-            resp_matrices[it] = np.matmul( S0mat, green_t )
+            resp_matrices[it] = np.matmul( green_t, S0mat )
 
     elif case == 'intrinsic':
         for it in range(nt):
@@ -660,7 +660,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
             # Calculate the Green's function (of an empty graph) at time t
             greendiag_t = np.diag( np.exp(jacdiag * t) )
             # Calculate the pair-wise responses at time t
-            resp_matrices[it] = np.matmul( S0mat, greendiag_t)
+            resp_matrices[it] = np.matmul( greendiag_t, S0mat )
 
     elif case == 'regressed':
         for it in range(nt):
@@ -670,7 +670,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
             # Calculate the Green's function (of an empty graph) at time t
             greendiag_t = np.diag( np.exp(jacdiag * t) )
             # Calculate the pair-wise responses at time t
-            resp_matrices[it] = np.matmul( S0mat, green_t - greendiag_t )
+            resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
     return resp_matrices
 
