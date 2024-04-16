@@ -548,7 +548,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
 
     return resp_matrices
 
-def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
+def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
                                                 case='regressed', normed=False):
     """Computes the pair-wise responses over time for the linear diffusive model.
 
@@ -581,6 +581,8 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
         If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
         Default, `S0 = 1.0` represents a unit perturbation to all nodes.
         If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
+    alpha : scalar.
+        Diffusivity or thermal diffusitivity parameter.
     tmax : scalar, optional
         Duration of the simulation, arbitrary time units.
     timestep : scalar, optional
@@ -624,6 +626,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
     # Ensure all arrays are of same dtype (np.float64)
     if con.dtype != np.float64:     con = con.astype(np.float64)
     if S0.dtype != np.float64:      S0 = S0.astype(np.float64)
+    alpha = np.float64(alpha)
 
     caselist = ['regressed', 'full', 'intrinsic']
     if case not in caselist:
@@ -650,7 +653,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
         for it in range(nt):
             t = it * timestep
             # Calculate the Green's function at time t
-            green_t = scipy.linalg.expm(jac * t)
+            green_t = scipy.linalg.expm(alpha * jac * t)
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t, S0mat )
 
@@ -658,7 +661,7 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
         for it in range(nt):
             t = it * timestep
             # Calculate the Green's function (of an empty graph) at time t
-            greendiag_t = np.diag( np.exp(jacdiag * t) )
+            greendiag_t = np.diag( np.exp(alpha * jacdiag * t) )
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( greendiag_t, S0mat )
 
@@ -666,9 +669,9 @@ def Resp_ContDiffusion(con, S0=1.0, tmax=10, timestep=0.1,
         for it in range(nt):
             t = it * timestep
             # Calculate the Green's function (of the full system) at time t
-            green_t = scipy.linalg.expm(jac * t)
+            green_t = scipy.linalg.expm(alpha * jac * t)
             # Calculate the Green's function (of an empty graph) at time t
-            greendiag_t = np.diag( np.exp(jacdiag * t) )
+            greendiag_t = np.diag( np.exp(alpha * jacdiag * t) )
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
