@@ -23,20 +23,20 @@ models on networks.
 
 Discrete-time models
 ---------------------
-Sim_DiscreteCascade
+Sim_DiscreteCascade (simDC)
     Simulates temporal evolution of the nodes for the discrete cascade.
-Sim_RandomWalk
+Sim_RandomWalk (simRW)
     Simulates temporal evolution of the nodes for the random walks.
 
 Continuous-time models
 -----------------------
-Sim_ContCascade
+Sim_ContCascade (simCC)
     Simulates temporal evolution of the nodes for the continuous cascade.
-Sim_LeakyCascade
+Sim_LeakyCascade (simLC)
     Simulates temporal evolution of the nodes for the leaky-cascade model.
-Sim_OrnsteinUhlenbeck
+Sim_OrnsteinUhlenbeck (simMOU)
     Simulates temporal evolution for the multivariate Ornstein-Uhlenbeck.
-Sim_ContDiffusion
+Sim_ContDiffusion (simCD)
     Simulates temporal evolution of the nodes for the simple diffustion model.
 
 
@@ -524,6 +524,15 @@ def Sim_ContDiffusion(con, X0=1.0, alpha=1.0, noise=None, tmax=10, timestep=0.01
 
     return Xdot
 
+
+
+## DEFINE ALIASES FOR SHORTER NAMES ############################################
+simDC = Sim_DiscreteCascade
+simRW = Sim_RandomWalk
+simCC = Sim_ContCascade
+simLC = Sim_LeakyCascade
+simMOU = Sim_OrnsteinUhlenbeck
+simCD = Sim_ContDiffusion
 
 
 

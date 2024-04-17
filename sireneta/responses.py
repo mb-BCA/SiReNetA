@@ -36,17 +36,17 @@ LaplacianMatrix
 
 Generation of main tensors
 --------------------------
-Resp_DiscreteCascade
+Resp_DiscreteCascade (respDC)
     Computes the pair-wise responses over time for the discrete cascade model.
-Resp_RandomWalk
+Resp_RandomWalk (respRW)
     Computes the pair-wise responses over time for the simple random walk model.
-Resp_ContCascade
+Resp_ContCascade (respCC)
     Computes the pair-wise responses over time for the continuous cascade model.
-Resp_LeakyCascade
+Resp_LeakyCascade (respLC)
     Computes the pair-wise responses over time for the leaky-cascade model.
-Resp_MOU
+Resp_OrnsteinUhlenbeck (respMOU)
     Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
-Resp_ContDiffusion
+Resp_ContDiffusion (resp_CD)
     Computes the pair-wise responses over time for the linear diffusive model.
 
 
@@ -810,6 +810,16 @@ def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
     return resp_matrices
+
+
+
+## DEFINE ALIASES FOR SHORTER NAMES ############################################
+respDC =  Resp_DiscreteCascade
+respRW =  Resp_RandomWalk
+respCC =  Resp_ContCascade
+respLC =  Resp_LeakyCascade
+respMOU = Resp_OrnsteinUhlenbeck
+respCD =  Resp_ContDiffusion
 
 
 
