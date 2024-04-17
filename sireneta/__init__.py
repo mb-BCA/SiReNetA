@@ -114,6 +114,7 @@ from .responses import *
 from . import metrics
 from .metrics import *
 from . import simulate
+from .simulate import *
 from . import tools
 # from . import netmodels
 # from . import metrics_test
@@ -124,7 +125,7 @@ __email__ = "gorka@Zamora-Lopez.xyz"
 __copyright__ = "Copyright 2024"
 __license__ = "Apache License version 2.0"
 __version__ = "1.0.0.dev1"
-__update__ = "16/04/2024"
+__update__ = "17/04/2024"
 
 
 
