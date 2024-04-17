@@ -18,7 +18,7 @@ Graph theory constitutes a widely used and established field providing powerful 
 
 ##### References and Citation
 
-- G. Zamora-López and M. Gilson "*[An integrative dynamical perspective for graph theory and the analysis of complex networks](https://doi.org/10.48550/arXiv.2307.02449)*" arXiv:2307.02449 (2023).
+- G. Zamora-López and M. Gilson "*[An integrative dynamical perspective for graph theory and the analysis of complex networks](https://doi.org/10.1063/5.0202241)*" Chaos 34, 041501 (2024).
 - M. Gilson, N. E. Kouvaris, et al. "*[Network analysis of whole-brain fMRI
 dynamics: A new framework based on dynamic communicability](https://doi.org/10.1016/j.neuroimage.2019.116007)*" NeuroImage **201**, 116007 (2019).
 - M. Gilson, N. E. Kouvaris, G. Deco and G. Zamora-López "*[Framework based on communicability and flow to analyze complex networks](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.97.052301)*" Phys. Rev. E **97**, 052301 (2018).

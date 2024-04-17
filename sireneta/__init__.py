@@ -33,9 +33,9 @@ approach to network analysis, it consists on four fundamental steps:
 **Reference and Citation**
 
 G. Zamora-Lopez and M. Gilson "An integrative dynamical perspective for graph
-theory and the analysis of complex networks" arXiv:2307.02449 (2023).
-DOI: `https://doi.org/10.48550/arXiv.2307.02449
-<https://doi.org/10.48550/arXiv.2307.02449>`_
+theory and the analysis of complex networks" Chaos 34, 041501 (2024).
+DOI: `https://doi.org/10.1063/5.0202241
+<https://doi.org/10.1063/5.0202241>`_
 
 M. Gilson, N. Kouvaris, et al. "Network analysis of whole-brain fMRI
 dynamics: A new framework based on dynamic communicability" NeuroImage 201,
