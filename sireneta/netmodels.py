@@ -29,12 +29,15 @@ binary or weighted networks.
 
 Generation and randomization of binary graphs
 ---------------------------------------------
-These functions are all imported from the GAlib library
+These functions are imported from or inspired by the GAlib library
 (https://github.com/gorkazl/pyGAlib)
 Please see doctsring of module "galib.models" for a list of functions.  ::
 
     >>> import galib
     >>> help(galib.models)
+
+
+RandomWeightedNet
 
 Surrogates for weighted networks
 --------------------------------
@@ -43,13 +46,6 @@ ShuffleLinkWeights
 
 RandomiseWeightedNetwork
     Randomises a connectivity matrix and its weights.
-
-Spatially embedded (weighted) networks
---------------------------------------
-SpatialWeightSorting
-    Sorts the link weights of a network by the spatial distance between nodes.
-SpatialLatticeFromNetwork
-    Generates spatial weighted lattices with same weights as `con`.
 """
 
 # Standard library imports
@@ -62,15 +58,99 @@ from numba import jit
 # from galib.models import*
 
 
-## DETERMINISTIC GRAPH MODELS ##################################################
-# NOTE: See GAlib.models package
-
 
 ## RANDOM GRAPH MODELS #########################################################
-# NOTE: See GAlib.models package
+
+def RandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
+    """
+    Generates a squared connectivity matrix for a random network with given 
+    probability of connection between each pair of nodes, with a given weight
+    distribution (like numpy.random.uniform or scipy.stats.uniform,
+    scipy.stats.norm).
+
+    Parameters
+    ----------
+    con_N : integer.
+        The dimension the squared connectivity matrix.
+    con_prob : float.
+        The probability connection for each link.
+    w_distr : function.
+        The distribution function for drawing weight samples, it must have a 
+        'size' argument for the number of generated samples.
+    arg_w_distr : dictionary or named arguments.
+        The other arguments necessary to define 'w_distr'.
+
+    Returns
+    -------
+    con : ndarray of rank-2 and shape (N x N).
+        A random connectivity matrix.
+        
+    Example
+    -------
+    RandomWeightedNet((3,3), 0.7, np.random.default_rng().uniform, low=0.0, high=1.0)
+    RandomWeightedNet((3,3), 0.7, np.random.default_rng().normal, low=0.0, high=1.0)
+    """
+    # 0) SECURITY CHECKS
+    if not type(con_N) == int:
+        raise TypeError( "Please enter the matrix shape as integer." )
+    if (not type(con_prob) == float) or con_prob < 0.0 or con_prob > 1.0:
+        raise TypeError( "Please enter the probability of connection 'con_prob' as float." )
+
+    # 1) GENERATE BOOLEAN MASK FOR TOPOLOGY (ADJACENCY MATRIX TRUE/FALSE), WITHOUT SELF-LOOP
+    adjmatrix = np.random.rand(con_N, con_N)
+    adjmatrix = adjmatrix <= con_prob
+    np.fill_diagonal(adjmatrix, False)
+
+    # 2) POPULATE WITH WEIGHTS
+    con = np.zeros_like(adjmatrix, dtype=float)
+    con[adjmatrix] = w_distr(**arg_w_distr, size=adjmatrix.sum())
+    
+    return con
+
+def RandomMaskNet(mask_con, w_distr, **arg_w_distr):
+    """
+    Generates a squared connectivity matrix for a mask that determines the 
+    connectivity topology for the network. Weights are sampled from a given 
+    distribution (like numpy.random.uniform or scipy.stats.uniform,
+    scipy.stats.norm).
+
+    Parameters
+    ----------
+    mask_con : ndarray of shape (N x N).
+        The mask of existing connections.
+    w_distr : function.
+        The distribution function for drawing weight samples, it must have a 
+        'size' argument for the number of generated samples.
+    arg_w_distr : dictionary or named arguments.
+        The other arguments necessary to define 'w_distr'.
+
+    Returns
+    -------
+    con : ndarray of rank-2 and shape (N x N).
+        A connectivity matrix with otopoly determined by 'mask_con' and random
+        weights drawn from the distribution 'w_distr'.
+    """
+    # 0) SECURITY CHECKS
+    if (not type(mask_con) == np.ndarray) and len(mask_con.shape) == 2:
+        raise TypeError( "Please enter the matrix shape as integer." )
+    mask_con = np.array(mask_con, dtype=bool)
+    if np.any(mask_con.diagonal()):
+        print( "Warning: Diagonal elements in mask_con ignored." )
+        np.fill_diagonal(mask_con, False)
+
+    # 1) POPULATE WITH WEIGHTS
+    con = np.zeros_like(mask_con, dtype=float)
+    con[mask_con] = w_distr(**arg_w_distr, size=mask_con.sum())
+    
+    return con
+
+def RndNonNormalNet(con):
+    raise ValueError( "Not implemented yet" )
 
 
 ## GENERATION OF SURROGATE NETWORKS ############################################
+# NOTE: See GAlib.models package
+
 def ShuffleLinkWeights(con):
     """
     Randomly re-allocates the link weights of an input network.
@@ -92,20 +172,19 @@ def ShuffleLinkWeights(con):
 
     """
     # 0) SECURITY CHECKS
-    if not type(con) == numpy.ndarray:
+    if not type(con) == np.ndarray:
         raise TypeError( "Please enter the connectivity matrix as a numpy array." )
     con_shape = np.shape(con)
     if (len(con_shape) != 2) or (con_shape[0] != con_shape[1]):
         raise ValueError( "Input not aligned. 'con' should be a 2D array of shape (N x N)." )
 
     # 1) EXTRACT THE CONSTRAINTS FROM THE con MATRIX
-    N = con_shape[0]
     nzidx = con.nonzero()
     weights = con[nzidx]
 
     # 2) GENERATE THE NEW NETWORK WITH THE WEIGHTS SHUFFLED
-    numpy.random.shuffle(weights)
-    newcon = np.zeros((N,N), dtype=con.dtype)
+    np.random.shuffle(weights)
+    newcon = np.zeros_like(con, dtype=con.dtype)
     newcon[nzidx] = weights
 
     return newcon
@@ -121,17 +200,8 @@ def RandomiseWeightedNetwork(con):
     are conserved, but the input/output degrees of the nodes, or their individual
     strengths, are not conserved.
 
-    The function identifies some properties of `con` in order to conserve
-    elementary properties of `con`. For example:
-    (1) The resulting random weighted network will only contain self-connections
-    (non-zero diagonal entries) if `con` contains self-connections.
-    (2) If `con` is an unweighted adjacency matrix (directed or undirected), the
-    result is an Erdos-Renyi-type random graph (directed or undirected),
-    of same size and number of links as `con`.
-    (3) If `con` is an undirected network but contains asymmetric link weights,
-    the result will be an undirected random graph with asymmetric weights.
-    (4) If `con` is a directed weighted network, the result will be a directed
-    and weighted network. In this case, weights cannot be symmetric.
+    IMPORTANT: As compared to GAlib, we only consider directed network matrices without 
+    self-loops.
 
     Parameters
     ----------
@@ -146,7 +216,7 @@ def RandomiseWeightedNetwork(con):
 
     """
     # 0) SECURITY CHECKS
-    if not type(con) == numpy.ndarray:
+    if not type(con) == np.ndarray:
         raise TypeError( "Please enter the connectivity matrix as a numpy array." )
     con_shape = np.shape(con)
     if (len(con_shape) != 2) or (con_shape[0] != con_shape[1]):
@@ -155,197 +225,33 @@ def RandomiseWeightedNetwork(con):
     # 1) EXTRACT INFORMATION NEEDED FROM THE con MATRIX
     N = con_shape[0]
 
-    # Find out whether con is symmetric
-    if abs(con - con.T).sum() == 0:
-        symmetric = True
-    else:
-        symmetric = False
-
-    # Find out whether con is directed and calculate the number of links
-    if Reciprocity(con) == 1.0:
-        directed = False
-        L = int( round(0.5*con.astype(bool).sum()) )
-    else:
-        directed = True
-        L = con.astype(bool).sum()
-
-    # Find out whether `con` allows self-loops (non-zero diagonal elements)
-    if con.trace() == 0:
-        selfloops = False
-    else:
-        selfloops = True
-
     # Get the weights, as a 1D array
-    if symmetric:
-        nzidx = np.triu(con, k=1).nonzero()
-        weights = con[nzidx]
-    else:
-        nzidx = con.nonzero()
-        weights = con[nzidx]
+    nzidx = con.nonzero()
+    weights = con[nzidx]
+
+    # number of connections
+    L = len(nzidx[0])
 
     # 2) GENERATE THE NEW NETWORK WITH THE WEIGHTS SHUFFLED
     # Initialise the matrix. Give same dtype as `con`
-    newcon = np.zeros((N,N), dtype=con.dtype)
+    newcon = np.zeros_like(con, dtype=con.dtype)
 
-    # Shuffle the list of weights
-    numpy.random.shuffle(weights)
+    # Shuffle the list of weightsg
+    np.random.shuffle(weights)
 
     # Finally, add the links at random
     counter = 0
     while counter < L:
         # 2.1) Pick up two nodes at random
-        source = int(N * numpy.random.rand())
-        target = int(N * numpy.random.rand())
+        source = int(N * np.random.rand())
+        target = int(N * np.random.rand())
 
         # 2.2) Check if they can be linked, otherwise look for another pair
         if newcon[source,target]: continue
-        if source == target and not selfloops: continue
+        if source == target: continue
 
         # 2.3) Perform the rewiring
         newcon[source,target] = weights[counter]
-        if not directed and symmetric:
-            newcon[target,source] = weights[counter]
-        elif not directed and not symmetric:
-            newcon[target,source] = weights[-(counter+1)]
         counter += 1
 
     return newcon
-
-
-## SPATIALLY EMBEDDED SURROGATES ###############################################
-def SpatialWeightSorting(con, distmat, descending=True):
-    """Sorts the link weights of a network by the spatial distance between nodes.
-
-    The function reads the weights from a connectivity matrix and re-allocates
-    them according to the euclidean distance between the nodes. The sorting
-    conserves the position of the links, therefore, if `con` is a binary graph,
-    the function will return a copy of `con`. The distance between nodes shall
-    be given as input `distmat`.
-
-    If descending = True, the larger weigths are assigned to the links between
-    closer nodes, and the smaller weights to the links between distant nodes.
-
-    If descending = False, the larger weights are assigned to the links between
-    distant nodes, and the smaller weights to links between close nodes.
-
-    Parameters
-    ----------
-    con : ndarray (2d) of shape (N,N).
-        The connectivity matrix of the network.
-    distmat : ndarray, rank-2.
-        A matrix containing the spatial distance between all pair of ROIs.
-        This can be either the euclidean distance, the fiber length or any
-        other geometric distance.
-    descending : boolean, optional.
-        Determines whether links weights are assigend in descending or in
-        ascending order, according to the euclidean distance between the nodes.
-
-    Returns
-    -------
-    newcon : ndarray of rank-2 and shape (N x N).
-        Connectivity matrix with weights sorted according to spatial distance
-        between the nodes.
-
-    """
-    # 0) SECURITY CHECKS
-    con_shape = np.shape(con)
-    dist_shape = np.shape(distmat)
-    if con_shape != dist_shape:
-        raise ValueError( "Data not aligned. 'con' and 'distmat' of same shape expectted. " )
-
-    # 1) EXTRACT THE NEEDED INFORMATION FROM THE con MATRIX
-    N = len(con)
-    # The indices of the links and their weights, distance
-    nzidx = con.nonzero()
-    weights = con[nzidx]
-    distances = distmat[nzidx]
-
-    # 2) SORT THE WEIGHTS IN DESCENDING ORDER
-    weights.sort()
-    if descending:
-        weights = weights[::-1]
-
-    # Get the indices that would sort the links by distance
-    sortdistidx = distances.argsort()
-    newidx = (nzidx[0][sortdistidx], nzidx[1][sortdistidx])
-
-    # 3) CREATE THE NEW CONNECTIVITY WITH THE LINK WEIGHTS SORTED SPATIALLY
-    newcon = np.zeros((N,N), np.float64)
-    newcon[newidx] = weights
-
-    return newcon
-
-def SpatialLatticeFromNetwork(con, distmat, descending=True):
-    """Generates spatial weighted lattices with same weights as `con`.
-
-    The function reads the weights from a connectivity matrix and generates a
-    spatially embedded weighted lattice, assigning the largest weights in
-    descending order to the nodes that are closer from each other. Therefore,
-    it requires also the euclidean distance between the nodes is given as input.
-
-    If `con` is a binary graph of L links, the function returns a graph with
-    links between the L spatially closest pairs of nodes.
-
-    If `descending = True`, the larger weigths are assigned to the links between
-    closer nodes, and the smaller weights to the links between distant nodes.
-
-    If `descending = False`, the larger weights are assigned to the links between
-    distant nodes, and the smaller weights to links between close nodes.
-
-    Note
-    ----
-    Even if `con` is either a directed network or undirected but with asymmetric
-    weights, the resulting lattice will be undirected and (quasi-)symmetric
-    due to the fact that the spatial distance between two nodes is symmetric.
-
-    Parameters
-    ----------
-    con : ndarray (2d) of shape (N,N).
-        The connectivity matrix of the network.
-    distmat : ndarray, rank-2.
-        A matrix containing the spatial distance between all pair of ROIs.
-        This can be either the euclidean distance, the fiber length or any
-        other geometric distance.
-    descending : boolean, optional.
-        Determines whether links weights are assigend in descending or in
-        ascending order, according to the euclidean distance between the nodes.
-
-    Returns
-    -------
-    newcon : ndarray of rank-2 and shape (N x N).
-        Connectivity matrix of a weighted lattice.
-
-    """
-    # 0) SECURITY CHECKS
-    con_shape = np.shape(con)
-    dist_shape = np.shape(distmat)
-    if con_shape != dist_shape:
-        raise ValueError( "Data not aligned. 'con' and 'distmat' of same shape expectted. " )
-
-    # 1) EXTRACT THE NEEDED INFORMATION FROM THE con MATRIX
-    N = len(con)
-
-    # Sort the weights of the network
-    weights = con.flatten()
-    weights.sort()
-    if descending:
-        weights = weights[::-1]
-
-    # Find the indices that sort the euclidean distances, from shorter to longer
-    if descending:
-        distmat[np.diag_indices(N)] = np.inf
-    else:
-        distmat[np.diag_indices(N)] = 0.0
-    distances = distmat.ravel()
-    sortdistidx = distances.argsort()
-    newidx = np.unravel_index( sortdistidx, (N,N) )
-
-    # And finally, create the coonectivity matrix with the weights sorted
-    newcon = np.zeros((N,N), np.float64)
-    newcon[newidx] = weights
-
-    return newcon
-
-
-
-##
