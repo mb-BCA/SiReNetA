@@ -36,26 +36,26 @@ LaplacianMatrix
 
 Generation of main tensors
 --------------------------
-Resp_DiscreteCascade
+Resp_DiscreteCascade (respDC)
     Computes the pair-wise responses over time for the discrete cascade model.
-Resp_RandomWalk
+Resp_RandomWalk (respRW)
     Computes the pair-wise responses over time for the simple random walk model.
-Resp_ContCascade
+Resp_ContCascade (respCC)
     Computes the pair-wise responses over time for the continuous cascade model.
-Resp_LeakyCascade
+Resp_LeakyCascade (respLC)
     Computes the pair-wise responses over time for the leaky-cascade model.
-Resp_MOU
+Resp_OrnsteinUhlenbeck (respMOU)
     Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
-Resp_ContDiffusion
+Resp_ContDiffusion (respCD)
     Computes the pair-wise responses over time for the linear diffusive model.
 
 
 **Reference and Citation**
 
 1) G. Zamora-Lopez and M. Gilson "An integrative dynamical perspective for graph
-theory and the analysis of complex networks" arXiv:2307.02449 (2023).
-DOI: `https://doi.org/10.48550/arXiv.2307.02449
-<https://doi.org/10.48550/arXiv.2307.02449>`_
+theory and the analysis of complex networks" Chaos 34, 041501 (2024).
+DOI: `https://doi.org/10.1063/5.0202241
+<https://doi.org/10.1063/5.0202241>`_
 
 2) M. Gilson, N. Kouvaris, et al. "Network analysis of whole-brain fMRI
 dynamics: A new framework based on dynamic communicability" NeuroImage 201,
@@ -810,6 +810,16 @@ def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
     return resp_matrices
+
+
+
+## DEFINE ALIASES FOR SHORTER NAMES ############################################
+respDC =  Resp_DiscreteCascade
+respRW =  Resp_RandomWalk
+respCC =  Resp_ContCascade
+respLC =  Resp_LeakyCascade
+respMOU = Resp_OrnsteinUhlenbeck
+respCD =  Resp_ContDiffusion
 
 
 

@@ -23,29 +23,29 @@ models on networks.
 
 Discrete-time models
 ---------------------
-DiscreteCascade
+Sim_DiscreteCascade (simDC)
     Simulates temporal evolution of the nodes for the discrete cascade.
-RandomWalk
+Sim_RandomWalk (simRW)
     Simulates temporal evolution of the nodes for the random walks.
 
 Continuous-time models
 -----------------------
-ContCascade
+Sim_ContCascade (simCC)
     Simulates temporal evolution of the nodes for the continuous cascade.
-LeakyCascade
+Sim_LeakyCascade (simLC)
     Simulates temporal evolution of the nodes for the leaky-cascade model.
-MOU
+Sim_OrnsteinUhlenbeck (simMOU)
     Simulates temporal evolution for the multivariate Ornstein-Uhlenbeck.
-ContDiffusion
+Sim_ContDiffusion (simCD)
     Simulates temporal evolution of the nodes for the simple diffustion model.
 
 
 **Reference and Citation**
 
 1) G. Zamora-Lopez and M. Gilson "An integrative dynamical perspective for graph
-theory and the analysis of complex networks" arXiv:2307.02449 (2023).
-DOI: `https://doi.org/10.48550/arXiv.2307.02449
-<https://doi.org/10.48550/arXiv.2307.02449>`_
+theory and the analysis of complex networks" Chaos 34, 041501 (2024).
+DOI: `https://doi.org/10.1063/5.0202241
+<https://doi.org/10.1063/5.0202241>`_
 """
 # TODO: Shall we call these functions as Sim_DiscreteCascade(), Sim_RandomWalk, etc?
 
@@ -59,7 +59,7 @@ from . import io_helpers
 
 
 ## DISCRETE-TIME CANONICAL MODELS #############################################
-def DiscreteCascade(con, X0=1.0, tmax=10):
+def Sim_DiscreteCascade(con, X0=1.0, tmax=10):
     """Simulates temporal evolution of the nodes for the discrete cascade.
 
     It returns the time-series of the nodes for the discrete cascade model
@@ -109,7 +109,7 @@ def DiscreteCascade(con, X0=1.0, tmax=10):
 
     return Xt
 
-def RandomWalk(con, X0=1.0, tmax=10):
+def Sim_RandomWalk(con, X0=1.0, tmax=10):
     """Simulates temporal evolution of the nodes for the random walks.
 
     It returns the time-series of the nodes for the discrete cascade model
@@ -169,7 +169,7 @@ def RandomWalk(con, X0=1.0, tmax=10):
 
 
 ## CONTINUOUS-TIME CANONICAL MODELS ###########################################
-def ContCascade(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
+def Sim_ContCascade(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
     """Simulates the temporal evolution of the nodes for the continuous cascade.
 
     It solves the differential equation for the simplest possible linear
@@ -254,7 +254,7 @@ def ContCascade(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
 
     return Xdot
 
-def LeakyCascade(con, X0=1.0, tau=1.0, tmax=10, timestep=0.01):
+def Sim_LeakyCascade(con, X0=1.0, tau=1.0, tmax=10, timestep=0.01):
     """Simulates temporal evolution of the nodes for the leaky-cascade model.
 
     It solves the differential equation for the linear propagation model of
@@ -336,7 +336,7 @@ def LeakyCascade(con, X0=1.0, tau=1.0, tmax=10, timestep=0.01):
 
     return Xdot
 
-def MOU(con, X0=1.0, tau=1.0, noise=1.0, tmax=10, timestep=0.01):
+def Sim_OrnsteinUhlenbeck(con, X0=1.0, tau=1.0, noise=1.0, tmax=10, timestep=0.01):
     """Simulates temporal evolution for the multivariate Ornstein-Uhlenbeck.
 
     It solves the differential equation for the linear propagation model of
@@ -426,7 +426,7 @@ def MOU(con, X0=1.0, tau=1.0, noise=1.0, tmax=10, timestep=0.01):
 
     return Xdot
 
-def ContDiffusion(con, X0=1.0, alpha=1.0, noise=None, tmax=10, timestep=0.01):
+def Sim_ContDiffusion(con, X0=1.0, alpha=1.0, noise=None, tmax=10, timestep=0.01):
     """Simulates the temporal evolution of the nodes for the continuous diffusion.
 
     It solves the differential equation for the simplest possible linear
@@ -524,6 +524,15 @@ def ContDiffusion(con, X0=1.0, alpha=1.0, noise=None, tmax=10, timestep=0.01):
 
     return Xdot
 
+
+
+## DEFINE ALIASES FOR SHORTER NAMES ############################################
+simDC = Sim_DiscreteCascade
+simRW = Sim_RandomWalk
+simCC = Sim_ContCascade
+simLC = Sim_LeakyCascade
+simMOU = Sim_OrnsteinUhlenbeck
+simCD = Sim_ContDiffusion
 
 
 
