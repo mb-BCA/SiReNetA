@@ -46,7 +46,7 @@ Resp_LeakyCascade (respLC)
     Computes the pair-wise responses over time for the leaky-cascade model.
 Resp_OrnsteinUhlenbeck (respMOU)
     Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
-Resp_ContDiffusion (resp_CD)
+Resp_ContDiffusion (respCD)
     Computes the pair-wise responses over time for the linear diffusive model.
 
 
