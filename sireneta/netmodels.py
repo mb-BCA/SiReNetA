@@ -37,31 +37,40 @@ Please see doctsring of module "galib.models" for a list of functions.  ::
     >>> help(galib.models)
 
 
-RandomWeightedNet
+Generator of directed weighted networks
+---------------------------------------
+GenRandomWeightedNet
+    Generates a randomly directed network (Erdős–Rényi) with given probability
+    of connection and weight distribution.
 
-Surrogates for weighted networks
---------------------------------
-ShuffleLinkWeights
-    Randomly re-allocates the weights associated to the links.
+GenRandomMaskNet
+    Generates a network with a given topology and random weights according to a
+    given distribution.
+    
+Surrogate methods for directed weighted networks
+------------------------------------------------
+ShuffleWeightsFixedLinks
+    Randomly re-allocates the weights associated to the links without breaking 
+    the network topology.
 
-RandomiseWeightedNetwork
-    Randomises a connectivity matrix and its weights.
+ShuffleLinks
+    Randomises a connectivity matrix (links wirh weights).
 """
 
 # Standard library imports
 
 # Third party packages
 import numpy as np
-from numba import jit
+#from numba import jit
 
 # import galib
 # from galib.models import*
 
 
 
-## RANDOM GRAPH MODELS #########################################################
+## RANDOM NETWORK MODELS #########################################################
 
-def RandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
+def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
     """
     Generates a squared connectivity matrix for a random network with given 
     probability of connection between each pair of nodes, with a given weight
@@ -85,10 +94,12 @@ def RandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
     con : ndarray of rank-2 and shape (N x N).
         A random connectivity matrix.
         
-    Example
-    -------
-    RandomWeightedNet((3,3), 0.7, np.random.default_rng().uniform, low=0.0, high=1.0)
-    RandomWeightedNet((3,3), 0.7, np.random.default_rng().normal, low=0.0, high=1.0)
+    Examples
+    -------;:-
+    GenRandomWeightedNet(3, 0.7, np.random.uniform, low=0.0, high=1.0)
+    GenRandomWeightedNet(3, 0.7, np.random.normal, loc=0.0, scale=1.0)
+    GenRandomWeightedNet(3, 0.7, w_smpl)
+        with def w_smpl(size): return np.random.uniform(low=0.0, high=1.0, size=size)
     """
     # 0) SECURITY CHECKS
     if not type(con_N) == int:
@@ -107,7 +118,7 @@ def RandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
     
     return con
 
-def RandomMaskNet(mask_con, w_distr, **arg_w_distr):
+def GenRandomMaskNet(mask_con, w_distr, **arg_w_distr):
     """
     Generates a squared connectivity matrix for a mask that determines the 
     connectivity topology for the network. Weights are sampled from a given 
@@ -148,10 +159,10 @@ def RndNonNormalNet(con):
     raise ValueError( "Not implemented yet" )
 
 
-## GENERATION OF SURROGATE NETWORKS ############################################
+## RANDOMIZED SURROGATE NETWORKS ############################################
 # NOTE: See GAlib.models package
 
-def ShuffleLinkWeights(con):
+def ShuffleWeightsFixedLinks(con):
     """
     Randomly re-allocates the link weights of an input network.
 
@@ -189,8 +200,8 @@ def ShuffleLinkWeights(con):
 
     return newcon
 
-@jit
-def RandomiseWeightedNetwork(con):
+#@jit
+def ShuffleLinks(con):
     """
     Randomises a connectivity matrix and its weights.
 
@@ -225,33 +236,16 @@ def RandomiseWeightedNetwork(con):
     # 1) EXTRACT INFORMATION NEEDED FROM THE con MATRIX
     N = con_shape[0]
 
-    # Get the weights, as a 1D array
-    nzidx = con.nonzero()
-    weights = con[nzidx]
-
-    # number of connections
-    L = len(nzidx[0])
+    # Get all weights as 1D array, including zero weights
+    idx = (np.eye(N)-1).nonzero()
+    weights = con[idx]
 
     # 2) GENERATE THE NEW NETWORK WITH THE WEIGHTS SHUFFLED
     # Initialise the matrix. Give same dtype as `con`
     newcon = np.zeros_like(con, dtype=con.dtype)
 
-    # Shuffle the list of weightsg
+    # Shuffle the list of weights and allocate
     np.random.shuffle(weights)
-
-    # Finally, add the links at random
-    counter = 0
-    while counter < L:
-        # 2.1) Pick up two nodes at random
-        source = int(N * np.random.rand())
-        target = int(N * np.random.rand())
-
-        # 2.2) Check if they can be linked, otherwise look for another pair
-        if newcon[source,target]: continue
-        if source == target: continue
-
-        # 2.3) Perform the rewiring
-        newcon[source,target] = weights[counter]
-        counter += 1
+    newcon[idx] = weights
 
     return newcon
