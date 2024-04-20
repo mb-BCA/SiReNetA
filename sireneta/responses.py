@@ -546,7 +546,7 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
 
     return resp_matrices
 
-def Resp_MOU(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
+def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
                                                 case='regressed', normed=False):
     """Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
 
