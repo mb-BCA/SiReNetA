@@ -36,17 +36,17 @@ LaplacianMatrix
 
 Generation of main tensors
 --------------------------
-Resp_DiscreteCascade (respDC)
+Resp_DiscreteCascade (Resp_DC)
     Computes the pair-wise responses over time for the discrete cascade model.
-Resp_RandomWalk (respRW)
+Resp_RandomWalk (Resp_RW)
     Computes the pair-wise responses over time for the simple random walk model.
-Resp_ContCascade (respCC)
+Resp_ContCascade (Resp_CC)
     Computes the pair-wise responses over time for the continuous cascade model.
-Resp_LeakyCascade (respLC)
+Resp_LeakyCascade (Resp_LC)
     Computes the pair-wise responses over time for the leaky-cascade model.
-Resp_OrnsteinUhlenbeck (respMOU)
+Resp_OrnsteinUhlenbeck (Resp_MOU)
     Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
-Resp_ContDiffusion (respCD)
+Resp_ContDiffusion (Resp_CD)
     Computes the pair-wise responses over time for the linear diffusive model.
 
 
@@ -814,12 +814,12 @@ def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
 
 
 ## DEFINE ALIASES FOR SHORTER NAMES ############################################
-respDC =  Resp_DiscreteCascade
-respRW =  Resp_RandomWalk
-respCC =  Resp_ContCascade
-respLC =  Resp_LeakyCascade
-respMOU = Resp_OrnsteinUhlenbeck
-respCD =  Resp_ContDiffusion
+Resp_DC =  Resp_DiscreteCascade
+Resp_RW =  Resp_RandomWalk
+Resp_CC =  Resp_ContCascade
+Resp_LC =  Resp_LeakyCascade
+Resp_MOU = Resp_OrnsteinUhlenbeck
+Resp_CD =  Resp_ContDiffusion
 
 
 
