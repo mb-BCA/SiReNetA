@@ -12,7 +12,10 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 
 ### Pending
 
-- Add functions to *core.py* module to compute R(t) for the different models:
+- Revise *ALL* strings for adequate (more modern Python) styles. The f'…' formatting should particularly be useful for all **warnings** and **error messages**. So, specifically to revise:
+	- Security checks at the beginning of every function.
+	- Everything on *io_helpers.py* module !! 
+- (FINISHED) Add functions to *core.py* module to compute R(t) for the different models:
 	- (DONE) Unify the functions for the MOU case into one function.
 	- (DONE) R(t) for the constinuous cascade.
 	- (DONE) R(t) for the discrete cascade.
