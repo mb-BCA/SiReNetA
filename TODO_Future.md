@@ -2,12 +2,17 @@
 
 I think that version 3 of ReNetA should be an object oriented library because we want to be able to compute the response matrices for different canonical models. The user should be able to call just one function to generate the response matrices, and one type of object to store that information, from which the user should be able to compute further metrics. Therefore, the library should be based around a core object (class) for the tensor containing the response matrices, *ResponseMatrices*. This object should have the following attributes and methods.
 
+### General TODO
+
+- Write pseudocode of how we would like a typeical workflow for the Object-Oriented version.
+- Identify attributes that should be locked from further changes. E.g., each object is bound, at creation time, to one canonical model. User cannot change the canonical model of the object later on. User would need to create another object for the same network and a different propagation model.
+
 ### Which attributes should the *ResponseMatrices* object have
 
 General attributes:
 
-- The canonical propagation model, e.g. `canonicalmodel`
-- Indicator for time discrete or continuous, e.g. `timetype`
+- The canonical propagation model, e.g. `canonicalmodel`. Unmutable.
+- Indicator for time discrete or continuous, e.g. `timetype`. Unmutable, fixed by `canonicalmodel`.
 - The connectivity matrix `con`
 - Number of nodes, N.
 - Temporal constraints of the simulation [`t0`, `tfinal`, `dt`]
