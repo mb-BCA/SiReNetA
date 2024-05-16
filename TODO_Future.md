@@ -4,7 +4,7 @@ Version 2 of ReNetA should be an object oriented library because we want to be a
 
 ### General TODO
 
-- Write pseudocode of how we would like a typeical workflow for the Object-Oriented version.
+- Write pseudocode of how we would like a typeical workflow for the Object-Oriented version. See [v2_PseudoCode.ipynb](v2_PseudoCode.ipynb). 
 - Identify attributes that should be locked from further changes. E.g., each object is bound, at creation time, to one canonical model. User cannot change the canonical model of the object later on. User would need to create another object for the same network and a different propagation model.
 
 ### Which attributes should the *ResponseMatrices* object have
