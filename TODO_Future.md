@@ -20,10 +20,12 @@ General attributes:
 - Initial conditions `X0`
 - The simulated tensor of shape (N, N, nt) with the flow.
 - Eigenvalues and eigenvectors of the connectivity matrix. (?? Not sure of this one.)
+- Largest eigenvalue `evmax`.
 
 
 Attributes only for specific canonical models:
 
+- Largest possible leakage rate `taumax`, where $\tau\_{max} = 1 / \lambda_{max}$.
 - The leakage rate used for the simulation, $\tau$.
 - The Sigma matrix (i.e., the matrix of the initial inputs), which is equal to input time (e.g. InstantaneousInput so far, StationaryInput for MOU). (((We need a check that Sigma is properly normalised. )))
 - The "personalization vector" for the random walkers with teleportation.
