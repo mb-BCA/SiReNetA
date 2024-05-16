@@ -1,6 +1,6 @@
 # Roadmap towards an object-based version of *SiReNetA* 
 
-I think that version 3 of ReNetA should be an object oriented library because we want to be able to compute the response matrices for different canonical models. The user should be able to call just one function to generate the response matrices, and one type of object to store that information, from which the user should be able to compute further metrics. Therefore, the library should be based around a core object (class) for the tensor containing the response matrices, *ResponseMatrices*. This object should have the following attributes and methods.
+Version 2 of ReNetA should be an object oriented library because we want to be able to compute the response matrices for different canonical models. The user should be able to call just one function to generate the response matrices, and one type of object to store that information, from which the user should be able to compute further metrics. Therefore, the library should be based around a core object (class) for the tensor containing the response matrices, *ResponseMatrices*. This object should have the following attributes and methods.
 
 ### General TODO
 
