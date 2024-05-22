@@ -20,7 +20,7 @@ General attributes:
 - Temporal constraints of the simulation [`t0`, `tfinal`, `dt`]
 - `tpoints` : ndarray of the time-points in the simulation. Calculated from `tfinal` and `dt`, not user input.
 - `S0` : The initial amplitude of stimulus at every node.
-- `data` : The "simulated" response tensor of response matrices. Shape = (tmax//dt+1, N, N).
+- `data` : The "simulated" response tensor of response matrices. Shape = (tmax//dt+1, N, N). Alternatively, it could be named `arr_tij`. Then, the internal arrays for node-wise responses would be `arr_ti` and for global response `arr_t`.
 - Eigenvalues and eigenvectors of the connectivity matrix. (?? Not sure of this one.)
 - `evmax` : Largest eigenvalue of `con`. Maybe not needed?
 
