@@ -93,7 +93,7 @@ Details of each function can also be seen using the usual help, ::
 
 License
 -------
-Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+Copyright (c) 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 Contact: gorka@zamora-lopez.xyz
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,7 +122,7 @@ from . import tools
 
 __author__ = "Gorka Zamora-Lopez and Matthieu Gilson"
 __email__ = "gorka@Zamora-Lopez.xyz"
-__copyright__ = "Copyright 2024"
+__copyright__ = "Copyright 2024 - 2025"
 __license__ = "Apache License version 2.0"
 __version__ = "1.0.0.dev1"
 __update__ = "17/04/2024"
