@@ -1,6 +1,6 @@
 # SiReNetA
 
-> NOTE! Current version is an "*alpha - development*" for testing and validation. Heavy changes expected until release of version 1.0, expected end of April 2024. Stay tuned or follow @GZamora_Lopez in Twitter.
+> NOTE! Current version is an "*alpha - development*" for testing and validation. Heavy changes expected until release of version 1.0. Stay tuned or follow ‪@gzamora-lopez.bsky.social‬ in Bluesky for updates.
 
 > If only interested in the *leaky-cascade* canonical model (multivariate Ornstein-Uhlenbeck), for now, we recommend to continue using the *[NetDynFlow](https://github.com/mb-BCA/NetDynFlow)* package until *SiReNetA* supersedes *NetDynFlow*.
 
@@ -88,7 +88,7 @@ Details of each function can also be seen using the usual help,
 &nbsp;
 ### LICENSE
 
-Copyright 2024, Gorka Zamora-López and Matthieu Gilson. Contact: <gorka@Zamora-Lopez.xyz>
+Copyright (c) 2024 – 2025, Gorka Zamora-López and Matthieu Gilson. Contact: <gorka@Zamora-Lopez.xyz>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this software except in compliance with the License.
