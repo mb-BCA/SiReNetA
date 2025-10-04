@@ -46,11 +46,11 @@ GenRandomWeightedNet
 GenRandomMaskNet
     Generates a network with a given topology and random weights according to a
     given distribution.
-    
+
 Surrogate methods for directed weighted networks
 ------------------------------------------------
 ShuffleWeightsFixedLinks
-    Randomly re-allocates the weights associated to the links without breaking 
+    Randomly re-allocates the weights associated to the links without breaking
     the network topology.
 
 ShuffleLinks
@@ -72,7 +72,7 @@ import numpy as np
 
 def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
     """
-    Generates a squared connectivity matrix for a random network with given 
+    Generates a squared connectivity matrix for a random network with given
     probability of connection between each pair of nodes, with a given weight
     distribution (like numpy.random.uniform or scipy.stats.uniform,
     scipy.stats.norm).
@@ -84,7 +84,7 @@ def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
     con_prob : float.
         The probability connection for each link.
     w_distr : function.
-        The distribution function for drawing weight samples, it must have a 
+        The distribution function for drawing weight samples, it must have a
         'size' argument for the number of generated samples.
     arg_w_distr : dictionary or named arguments.
         The other arguments necessary to define 'w_distr'.
@@ -93,7 +93,7 @@ def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
     -------
     con : ndarray of rank-2 and shape (N x N).
         A random connectivity matrix.
-        
+
     Examples
     -------;:-
     GenRandomWeightedNet(3, 0.7, np.random.uniform, low=0.0, high=1.0)
@@ -115,13 +115,13 @@ def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
     # 2) POPULATE WITH WEIGHTS
     con = np.zeros_like(adjmatrix, dtype=float)
     con[adjmatrix] = w_distr(**arg_w_distr, size=adjmatrix.sum())
-    
+
     return con
 
 def GenRandomMaskNet(mask_con, w_distr, **arg_w_distr):
     """
-    Generates a squared connectivity matrix for a mask that determines the 
-    connectivity topology for the network. Weights are sampled from a given 
+    Generates a squared connectivity matrix for a mask that determines the
+    connectivity topology for the network. Weights are sampled from a given
     distribution (like numpy.random.uniform or scipy.stats.uniform,
     scipy.stats.norm).
 
@@ -130,7 +130,7 @@ def GenRandomMaskNet(mask_con, w_distr, **arg_w_distr):
     mask_con : ndarray of shape (N x N).
         The mask of existing connections.
     w_distr : function.
-        The distribution function for drawing weight samples, it must have a 
+        The distribution function for drawing weight samples, it must have a
         'size' argument for the number of generated samples.
     arg_w_distr : dictionary or named arguments.
         The other arguments necessary to define 'w_distr'.
@@ -152,7 +152,7 @@ def GenRandomMaskNet(mask_con, w_distr, **arg_w_distr):
     # 1) POPULATE WITH WEIGHTS
     con = np.zeros_like(mask_con, dtype=float)
     con[mask_con] = w_distr(**arg_w_distr, size=mask_con.sum())
-    
+
     return con
 
 def RndNonNormalNet(con):
@@ -211,7 +211,7 @@ def ShuffleLinks(con):
     are conserved, but the input/output degrees of the nodes, or their individual
     strengths, are not conserved.
 
-    IMPORTANT: As compared to GAlib, we only consider directed network matrices without 
+    IMPORTANT: As compared to GAlib, we only consider directed network matrices without
     self-loops.
 
     Parameters
