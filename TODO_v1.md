@@ -13,13 +13,13 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 ### TODO list
 
 - Revise *ALL* strings for adequate (more modern Python) styles. The f'…' formatting should particularly be useful for all **warnings** and **error messages**. So, specifically to revise:
-	- Security checks at the beginning of every function.
-	- Everything on *io_helpers.py* module !! 
+    - ~~The error messages on *io_helpers.py* module~~ !! 
+    - Security checks at the beginning of every function.
 - Write the **stringdoc** documentation for:
     - Beginning of *io_helpers.py* module.
     - All funtions in *io_helpers.py* module.
     - …
-- Add functions to *core.py* module to compute R(t) for the different models:
+- Add functions to *responses.py* module to compute R(t) for the different models:
 	- ~~Unify the functions for the MOU case into one function~~.
 	- ~~R(t) for the constinuous cascade~~.
 	- ~~R(t) for the discrete cascade~~.
@@ -29,10 +29,10 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 - In module *metrics.py* module:
 	- ~~To return the peak flows~~.
 	- ~~Add a function to extract and study the evolution of the self-interactions~~. DONE,  see function `metrics.SelfResponses()`.
-	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self. 
+	- ~~Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases~~.
+	- ~~Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self~~. 
 	- For response tensors $R(t)$, add validation they converged to zero. Send warning otherwirse, recommending to run longer simulation.
 	- For `AreaUnderCurve()` function, send warning if tensor values are farther than zero for a given tolerance. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. So, if the responses didn't properly decay, the function should return a warning recommending to run longer simulations.)
-	- ~~Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases~~.
 	- (FOR LATER) Same for function `Time2Decay()` and/or `Time2Convergence()`. Should send warning when it returns the duration of the simulation in those cases???
 	- Add a function to estimate time-to-threshold. For models that diverge. This is an extension of the graph distance for binary network where threshold = 1 should be the default (for discrete cascade).
 	- Can / shall we add function to estimate the "Markov time" distance/centrality, as in Arnaudon et al., Phys. Rev. Research (2020) ?
@@ -43,15 +43,13 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 - Double-check and validate function `Resp_OrnsteinUhlenbeck()`. Unfinished function. E.g., input parameter is `S0` instead of `S0mat` which is internally checked … Compare to main function from *NetDynFlow* package.
 - **ACHTUNG !!** Double check the normalization of Gaussian noise (depending of time-step) in *simulate.py*. It seems the variance of the results is ~2x the one it should (??)
 
-- ~~Include a *netmodels.py* module for generating networks and surrogates~~. ALTERNATIVE: We don't neet a module for this, we could just have all those generator functions in *GAlib** and import. BETTER OPTION, module *netmodels.py* could import and wrap the functions in GAlib. Include the followong functions:
+- ~~Include a *netmodels.py* module for generating networks and surrogates~~. ALTERNATIVE: We don't need a module for this, we could just have all those generator functions in *GAlib** and import. BETTER OPTION, module *netmodels.py* could import and wrap the functions in GAlib. Include the followong functions:
 	- ~~In spatially embedded networks, a function to assign the stronger links to the closest nodes~~. See function `SpatialWeightSorting()`.
 	- Weighted ring lattice, with stronger weights between neighbouring nodes (model by Muldoon et al., 2016)
     - Check and validate the network generation functions in *netmodels.py*.
 
 
 - ~~Add security checks at the beginning of all functions~~.
-
-- TEST: the directed path graph with intercalated negative weights!
 
 - Finish test normalizations: (i) Eigenvalue, (ii) total weight, (iii) same inputs.
 
