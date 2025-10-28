@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+# Copyright 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 # Contact: gorka@zamora-lopez.xyz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,8 +42,6 @@ AreaUnderCurve
 
 1) G. Zamora-Lopez and M. Gilson "An integrative dynamical perspective for graph
 theory and the analysis of complex networks" Chaos 34, 041501 (2024).
-DOI: `https://doi.org/10.1063/5.0202241
-<https://doi.org/10.1063/5.0202241>`_
 
 2) M. Gilson, N. Kouvaris, et al. "Network analysis of whole-brain fMRI
 dynamics: A new framework based on dynamic communicability" NeuroImage 201,
@@ -54,22 +52,20 @@ cability and flow to analyze complex networks" Phys. Rev. E 97, 052301 (2018).
 """
 
 # Standard library imports
-
 # Third party packages
 import numpy as np
+# Local imports from sireneta
+from . import io_helpers
 
 
+# TODO: MAKE SURE FUNCTIONS RUN AFTER INTRODUCTION OF validate_tensor() CHECKS
+# TODO: REVISE AND ADAPT ALL THE DOCSTRING DESCRIPTIONS
 
 ## METRICS EXTRACTED FROM THE PAIR-WISE RESPONSE TENSORS #######################
-
-# TODO: REVISE AND ADAPT ALL THE DOCSTRING DESCRIPTIONS
-# TODO: WRITE THE IO-CHECK FUNCTIONS FOR THE TENSORS
-
 def GlobalResponse(tensor):
+    # TODO: Change name to NetworkResponse() ?
     """
     Calculates network response over time, summed over all pair-wise responses.
-
-    TODO: Change name to NetworkResponse() ?
 
     Parameters
     ----------
@@ -83,13 +79,10 @@ def GlobalResponse(tensor):
         The total networks response over time, summed over all pair-wise
         responses at each time-point.
     """
+    # 0) CHECK THE USER INPUT
+    io_helpers.validate_tensor(tensor)
 
-    # 0) SECURITY CHECKS
-    # Check the input tensor has the correct 3D shape
-    tensor_shape = np.shape(tensor)
-    if (len(tensor_shape) != 3) or (tensor_shape[1] != tensor_shape[2]):
-        raise ValueError("Input array not aligned. A 3D array of shape (N x N x nt) expected.")
-
+    # 1) Compute the global network responses over time (nt)
     global_response = tensor.sum(axis=(1,2))
 
     return global_response
@@ -111,12 +104,10 @@ def Diversity(tensor):
         responses at each time-point.
 
     """
-    # 0) SECURITY CHECKS
-    # Check the input tensor has the correct 3D shape
-    tensor_shape = np.shape(tensor)
-    if (len(tensor_shape) != 3) or (tensor_shape[1] != tensor_shape[2]):
-        raise ValueError("Input array not aligned. A 3D array of shape (nt x N x N) expected.")
+    # 0) CHECK THE USER INPUT
+    io_helpers.validate_tensor(tensor)
 
+    # 1)
     nt = tensor_shape[0]
     diversity = np.zeros(nt, np.float64)
     diversity[0] = np.nan
@@ -155,12 +146,8 @@ def NodeResponses(tensor, selfresp=True):
     --------
     SelfResponses : Temporal evolution of the responses of nodes due to stimulus on themselves.
     """
-
-    # 0) SECURITY CHECKS
-    # Check the input tensor has the correct 3D shape
-    arr_shape = np.shape(tensor)
-    if (len(arr_shape) != 3) or (arr_shape[1] != arr_shape[2]):
-        raise ValueError("Input array not aligned. A 3D array of shape (nt x N x N) expected.")
+    # 0) CHECK THE USER INPUT
+    io_helpers.validate_tensor(tensor)
 
     # 1) Calculate the input and output node properties
     # When self-responses shall be included to the temporal node responses
@@ -200,12 +187,8 @@ def SelfResponses(tensor):
     --------
     NodeResponses : Temporal evolution of the input and output responses for each node.
     """
-
-    # 0) SECURITY CHECKS
-    # Check the input tensor has the correct 3D shape
-    arr_shape = np.shape(tensor)
-    if (len(arr_shape) != 3) or (arr_shape[1] != arr_shape[2]):
-        raise ValueError("Input array not aligned. A 3D array of shape (nt x N x N) expected.")
+    # 0) CHECK THE USER INPUT
+    io_helpers.validate_tensor(tensor)
 
     # 1) Calculate the self reponses
     nt, N,N = arr_shape
@@ -245,13 +228,11 @@ def Time2Peak(arr, timestep):
         Output shape depends on input.
     """
 
-    # 0) SECURITY CHECKS
+    # 0) CHECK THE USER INPUT
     ## TODO: Write a check to verify the curve has a real peak and decays after
     ## the peak. Raise a warning that maybe longer simulation is needed.
-    arr_shape = np.shape(arr)
-    if arr_shape==3:
-        if arr_shape[1] != arr_shape[2]:
-            raise ValueError("Input array not aligned. For 3D arrays shape (nt x N x N) is expected.")
+    if arr.shape == 3:
+        io_helpers.validate_tensor(arr)
 
     # 1) Get the indices at which every element peaks
     ttp_arr = arr.argmax(axis=0)
@@ -303,16 +284,11 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
         The accumulated response (area-under-the-curve) between pairs of nodes,
         by nodes or by the whole network, over a period of time.
     """
-
-    # 0) SECURITY CHECKS
+    # 0) CHECK THE USER INPUT
     ## TODO: Write a check to verify the curve has a real peak and decays after
     ## the peak. Raise a warning that maybe longer simulation is needed.
-
-    # Check correct shape, in case input is the 3D array for the pair-wise flow
-    arr_shape = np.shape(arr)
-    if arr_shape==3:
-        if arr_shape[1] != arr_shape[2]:
-            raise ValueError("Input array not aligned. For 3D arrays shape (nt x N x N) is expected.")
+    if arr.shape == 3:
+        io_helpers.validate_tensor(arr)
 
     # Validate options for optional variable 'timespan'
     caselist = ['alltime', 'raise', 'decay']
