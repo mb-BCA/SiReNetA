@@ -54,7 +54,7 @@ ShuffleWeightsFixedLinks
     the network topology.
 
 ShuffleLinks
-    Randomises a connectivity matrix (links wirh weights).
+    Randomises a connectivity matrix (links with weights).
 """
 
 # Standard library imports
