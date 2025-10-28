@@ -26,6 +26,8 @@ Input handling functions
 ------------------------
 validate_con
     Check if user input `con` is a suitable connectivity matrix.
+validate_tensor
+    Check if user input `tensor` is a suitable 3D response tensor.
 validate_X0
     Check if user input `X0` is a suitable array of initial conditions.
 validate_S0
@@ -62,6 +64,20 @@ def validate_con(a):
     if np.ndim(a)==2 and conshape[0]==conshape[1]: pass
     else:
         raise ValueError( "'con' must be a square matrix, but shape %s found" %str(np.shape(a)) )
+
+def validate_tensor(a):
+    """
+    This function returns nothing. It only checks the tensor given by the user.
+    """
+    # Make sure 'tensor' is a numpy array, of np.float64 dtype
+    if isinstance(a, np.ndarray): pass
+    else:
+        raise TypeError( "'con' must be numpy array, but %s found" %type(a) )
+
+    # Make sure 'tensor' is a 3D array of suitable shape
+    tenshape = np.shape(tensor)
+    if (len(tenshape) != 3) or (tenshape[1] != tenshape[2]):
+        raise ValueError("Input array not aligned. A 3D array of shape (nt,N,N) expected.")
 
 def validate_X0(a, N):
     """
