@@ -16,7 +16,7 @@
 
 """
 Response Network Analysis (SiReNetA)
-==================================
+====================================
 
 A library to study complex networks in the light of canonical propagation models.
 
@@ -34,8 +34,6 @@ approach to network analysis, it consists on four fundamental steps:
 
 G. Zamora-Lopez and M. Gilson "An integrative dynamical perspective for graph
 theory and the analysis of complex networks" Chaos 34, 041501 (2024).
-DOI: `https://doi.org/10.1063/5.0202241
-<https://doi.org/10.1063/5.0202241>`_
 
 M. Gilson, N. Kouvaris, et al. "Network analysis of whole-brain fMRI
 dynamics: A new framework based on dynamic communicability" NeuroImage 201,
@@ -56,12 +54,15 @@ The library is organised into the following user modules:
 
 responses.py
     Functions to calculate the spatio-temporal evolution of pair-wise node
-    responses for different canonical models.
+    responses, using different canonical propagation models.
 metrics.py
     Descriptors to characterise the spatio-temporal evolution of perturbation-induced
     responses in a network.
 simulate.py
     Functions to run simulations of the different canonical models on networks.
+netmodels.py
+    Functions to generate and randomise (weighted) networks of interest for
+    benchmarking.
 tools.py
     Miscellaneous functionalities.
 
@@ -115,8 +116,8 @@ from . import metrics
 from .metrics import *
 from . import simulate
 from .simulate import *
+from . import netmodels
 from . import tools
-# from . import netmodels
 # from . import metrics_test
 
 
@@ -125,7 +126,7 @@ __email__ = "gorka@Zamora-Lopez.xyz"
 __copyright__ = "Copyright 2024 - 2025"
 __license__ = "Apache License version 2.0"
 __version__ = "1.0.0.dev1"
-__update__ = "17/04/2024"
+__update__ = "28/10/2025"
 
 
 
