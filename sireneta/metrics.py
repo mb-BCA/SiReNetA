@@ -63,7 +63,6 @@ from . import io_helpers
 
 ## METRICS EXTRACTED FROM THE PAIR-WISE RESPONSE TENSORS #######################
 def GlobalResponse(tensor):
-    # TODO: Change name to NetworkResponse() ?
     """
     Calculates network response over time, summed over all pair-wise responses.
 
@@ -107,8 +106,8 @@ def Diversity(tensor):
     # 0) CHECK THE USER INPUT
     io_helpers.validate_tensor(tensor)
 
-    # 1)
-    nt = tensor_shape[0]
+    # 1) Do the calculations
+    nt = tensor.shape[0]
     diversity = np.zeros(nt, np.float64)
     diversity[0] = np.nan
     for i_t in range(1,nt):
@@ -157,7 +156,7 @@ def NodeResponses(tensor, selfresp=True):
 
     # Excluding the self-responses a node due to inital perturbation on itself.
     else:
-        nt, N,N = arr_shape
+        nt, N,N = arr.shape
         inflows = np.zeros((nt,N), np.float64)
         outflows = np.zeros((nt,N), np.float64)
         for i in range(N):
@@ -191,7 +190,7 @@ def SelfResponses(tensor):
     io_helpers.validate_tensor(tensor)
 
     # 1) Calculate the self reponses
-    nt, N,N = arr_shape
+    nt, N,N = arr.shape
     self_resps = np.zeros((nt,N), np.float64)
     for i in range(N):
         self_resps[:,i] = tensor[:,i,i]
@@ -293,7 +292,7 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
     # Validate options for optional variable 'timespan'
     caselist = ['alltime', 'raise', 'decay']
     if timespan not in caselist :
-        raise ValueError( "Optional parameter 'timespan' requires one of the following values: %s" %str(caselist) )
+        raise ValueError( f"Optional parameter 'timespan' requires one of the following values: {str(caselist)}" )
 
     # 1) DO THE CALCULATIONS
     # 1.1) Easy case. Integrate area-under-the-curve along whole time interval
@@ -306,11 +305,11 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
         tpidx = arr.argmax(axis=0)
 
         # Initialise the final array
-        tf_shape = arr_shape[1:]
+        tf_shape = arr.shape[1:]
         integral = np.zeros(tf_shape, np.float64)
 
         # Sum the flow(s) over time, only in the desired time interval
-        nsteps = arr_shape[0]
+        nsteps = arr.shape[0]
         for t in range(1,nsteps):
             # Check if the flow at time t should be accounted for or ignored
             if timespan == 'raise':
