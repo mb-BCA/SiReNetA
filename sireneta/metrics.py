@@ -246,10 +246,8 @@ def Time2Peak(arr, timestep):
     """
 
     # 0) SECURITY CHECKS
-    ## TODO1: Write a check to verify the curve has a real peak and decays after
+    ## TODO: Write a check to verify the curve has a real peak and decays after
     ## the peak. Raise a warning that maybe longer simulation is needed.
-    ## TODO2: Silent nodes (non-perturbed) should return inf instead of zero.
-    # Check correct shape, in case input is the 3D array for the pair-wise flow
     arr_shape = np.shape(arr)
     if arr_shape==3:
         if arr_shape[1] != arr_shape[2]:
