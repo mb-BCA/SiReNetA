@@ -1,5 +1,13 @@
 # TO-DO list before public release
 
+
+In order to properly finalise v1, ask Nacho:
+- How to deal with inputs to functions. Check every input parameter?
+- How to deal with the updates of the Copyright statement !?
+- What to do with the *tools.py* module ?
+- Reminder of how to build Python packages and upload them to PyPI, following the "new" rules.
+
+
 #### Before merging new version into master:
 
 
@@ -32,7 +40,7 @@
 
 #### Make the repository public
 
-- Create a GitHub release.
-- Add the library to PYPI (?)
+- Create a GitHub release for v1.
+- Upload SiReNetA to PYPI.
 
 
