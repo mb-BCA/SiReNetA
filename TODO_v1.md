@@ -32,7 +32,7 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self. 
 	- For response tensors $R(t)$, add validation they converged to zero. Send warning otherwirse, recommending to run longer simulation.
 	- For `AreaUnderCurve()` function, send warning if tensor values are farther than zero for a given tolerance. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. So, if the responses didn't properly decay, the function should return a warning recommending to run longer simulations.)
-	- Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases.
+	- ~~Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases~~.
 	- (FOR LATER) Same for function `Time2Decay()` and/or `Time2Convergence()`. Should send warning when it returns the duration of the simulation in those cases???
 	- Add a function to estimate time-to-threshold. For models that diverge. This is an extension of the graph distance for binary network where threshold = 1 should be the default (for discrete cascade).
 	- Can / shall we add function to estimate the "Markov time" distance/centrality, as in Arnaudon et al., Phys. Rev. Research (2020) ?
