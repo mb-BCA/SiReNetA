@@ -10,55 +10,56 @@ I guess that version v1 of *SiReNetA* is going to be transparent from the point 
 In any case, v2 has to be a clean and coherent library such that the transition to an object-oriented version should be as smooth as possible.
 
 
-### Pending
+### TODO list
 
-<<<<<<< Updated upstream
 - Revise *ALL* strings for adequate (more modern Python) styles. The f'…' formatting should particularly be useful for all **warnings** and **error messages**. So, specifically to revise:
 	- Security checks at the beginning of every function.
 	- Everything on *io_helpers.py* module !! 
-- Write the **stringdoc** documentation at beginning of *io_helpers.py* module.
-- Add functions to the *metrics.py* module:
-	- (DONE) To return the peak flows. I know, it is really trivial to compute but… we need to give these things in functions for beginer users.
-	- Send warning if tensor values are farther than zero for a tolerance, with good default value that can also be adjusted 
-    	- (WAS: We need a function to verify the response curve has reached "zero". Not sure of the criteria that should be applied to this, specially considering the small numbers that flows tend to have. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. If the responses haven't properly decay, the function should return a warning, recommending to run longer simulations.)
-	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self 
-	- (DONE, `metrics.SelfResponses()`) We need a function to extract and study the evolution of the self-interactions. That is, the temporal response of a node to a perturbation on itself at time t = 0. This is in a way what Ernesto called "returnability" but we have that over time. Remind that in graphs the clustering coefficient is indeed calculated in this manner, for loops of lenght = 3, but longer loops could be included.)
-=======
+- Write the **stringdoc** documentation for:
+    - Beginning of *io_helpers.py* module.
+    - All funtions in *io_helpers.py* module.
+    - …
 - Add functions to *core.py* module to compute R(t) for the different models:
 	- ~~Unify the functions for the MOU case into one function~~.
 	- ~~R(t) for the constinuous cascade~~.
 	- ~~R(t) for the discrete cascade~~.
 	- ~~R(t) for the random walks~~.
 	- ~~R(t) for the continuous diffusion~~.
-- Add functions to the *metrics.py* module:
-	- ~~To return the peak flows~~. I know, it is really trivial to compute but… we need to give these things in functions for beginer users.
-	- Send warning if tensor values are farther than zero for a tolerance, with good default value that can also be adjusted (WAS: We need a function to verify the response curve has reached "zero". Not sure of the criteria that should be applied to this, specially considering the small numbers that flows tend to have. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. If the responses haven't properly decayed, the function should return a warning, recommending to run longer simulations.)
-	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self (WAS We need a function to extract and study the evolution of the self-interactions. That is, the temporal response of a node to a perturbation on itself at time t = 0. This is in a way what Ernesto called "returnability" but we have that over time. Remind that in graphs the clustering coefficient is indeed calculated in this manner, for loops of lenght = 3, but longer loops could be included.)
->>>>>>> Stashed changes
-	- Add a function to estimate time-to-threshold. For models that diverge. This is an extension of the graph distance for binary network where threshold = 1 should be the default (for discrete cascade).
 
-- (DONE) What to do about the `sigma` parameter that we only have for the MOU? It expects a matrix, not a vector of input amplitudes to the nodes.
-	- THE DECISION: For now `sigma` is called S0 with default value `S0=1`. That computes the canonical case with unit input at all nodes. `S0` is and optional parameter that accepts a number or a vector. Later, we may think of allowing a matrix again. But first, we must understand whether that makes sense for the three continuous canonical models. 	
+- In module *metrics.py* module:
+	- ~~To return the peak flows~~.
+	- ~~Add a function to extract and study the evolution of the self-interactions~~. DONE,  see function `metrics.SelfResponses()`.
+	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self. 
+	- For response tensors $R(t)$, add validation they converged to zero. Send warning otherwirse, recommending to run longer simulation.
+	- For `AreaUnderCurve()` function, send warning if tensor values are farther than zero for a given tolerance. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. So, if the responses didn't properly decay, the function should return a warning recommending to run longer simulations.)
+	- Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases.
+	- (FOR LATER) Same for function `Time2Decay()` and/or `Time2Convergence()`. Should send warning when it returns the duration of the simulation in those cases???
+	- Add a function to estimate time-to-threshold. For models that diverge. This is an extension of the graph distance for binary network where threshold = 1 should be the default (for discrete cascade).
+	- Can / shall we add function to estimate the "Markov time" distance/centrality, as in Arnaudon et al., Phys. Rev. Research (2020) ?
+
+- ~~What to do about the `sigma` parameter that we only have for the MOU?~~ It expects a matrix, not a vector of input amplitudes to the nodes.
+	- THE DECISION: For now `sigma` is called S0 with default value `S0=1`. That computes the canonical case with unit input at all nodes. `S0` is and optional parameter that accepts a number or a vector. Later, we may think of allowing a matrix again. But first, we must understand whether that makes sense for the three continuous canonical models. 
 	- Two functions were implemented `Resp_LeakyCascade()` and `Resp_OrnsteinUhlenck()`, with the first taking only a vector `S0` as input and the second expecting the covariance matrix.
 - Double-check and validate function `Resp_OrnsteinUhlenbeck()`. Unfinished function. E.g., input parameter is `S0` instead of `S0mat` which is internally checked … Compare to main function from *NetDynFlow* package.
 - **ACHTUNG !!** Double check the normalization of Gaussian noise (depending of time-step) in *simulate.py*. It seems the variance of the results is ~2x the one it should (??)
 
-- (DONE) Include a *netmodels.py* module for generating networks and surrogates. Include the followong functions. ACHTUNG!! Do we want a module for this, or shall we add those functions to *GAlib* ??:
-	- (DONE) A function to generate random weighted networks of different distributions.
-	- In spatially embedded networks, a function to assign the stronger links to the closest nodes.
-	- Weighted ring lattice, with stronger weights between neighbouring nodes (model by Muldoon et al.)
+- ~~Include a *netmodels.py* module for generating networks and surrogates~~. ALTERNATIVE: We don't neet a module for this, we could just have all those generator functions in *GAlib** and import. BETTER OPTION, module *netmodels.py* could import and wrap the functions in GAlib. Include the followong functions:
+	- ~~In spatially embedded networks, a function to assign the stronger links to the closest nodes~~. See function `SpatialWeightSorting()`.
+	- Weighted ring lattice, with stronger weights between neighbouring nodes (model by Muldoon et al., 2016)
     - Check and validate the network generation functions in *netmodels.py*.
 
-- Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases.
 
-- (FOR LATER) Same for function `Time2Decay()` and/or `Time2Convergence()`. Should send warning when it returns the duration of the simulation in those cases???
+- ~~Add security checks at the beginning of all functions~~.
 
-- (DONE) Add security checks at the beginning of all functions.
+- TEST: the directed path graph with intercalated negative weights!
+
+- Finish test normalizations: (i) Eigenvalue, (ii) total weight, (iii) same inputs.
+
+- Make sure of docstrings are good (and homogeneous) in all modules.
 
 
 
-
-### Finished
+### Finished  (OLDER LIST)
 
 - Include a new module named `simulations.py` containing the code to simulate the network under the different canonical models and return the temporal solutions **x**(t) for the nodes.
 - Add functions to the *metrics.py* module:
@@ -77,13 +78,6 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 
 
 - Add functions `NNt2tNN()` and `tNN2NNt()` for transposing the flow tensors in the *tools.py* module.
-
-- (FINISHED) Add functions to *core.py* module to compute R(t) for the different models:
-	- (DONE) Unify the functions for the MOU case into one function.
-	- (DONE) R(t) for the constinuous cascade.
-	- (DONE) R(t) for the discrete cascade.
-	- (DONE) R(t) for the random walks.
-	- (DONE) R(t) for the continuous diffusion.
 
 - (DONE) **IMPORTANT. Graph theory vs dynamical systems convention.** Decide whether *ReNetA* should follow the graph convention such that $A_{ij} = 1$ means a link $i \to j$, or the indexing of dynamical systems instead, meaning $j \to i$.
 	- (DONE) Include functions in module *tools.py* to transform the tensors and the matrices between the two conventions.
