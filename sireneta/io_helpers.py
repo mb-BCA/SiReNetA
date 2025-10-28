@@ -75,7 +75,7 @@ def validate_tensor(a):
         raise TypeError( "'con' must be numpy array, but %s found" %type(a) )
 
     # Make sure 'tensor' is a 3D array of suitable shape
-    tenshape = np.shape(tensor)
+    tenshape = np.shape(a)
     if (len(tenshape) != 3) or (tenshape[1] != tenshape[2]):
         raise ValueError("Input array not aligned. A 3D array of shape (nt,N,N) expected.")
 
