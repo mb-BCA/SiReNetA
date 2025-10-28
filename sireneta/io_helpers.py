@@ -57,13 +57,13 @@ def validate_con(a):
     # Make sure 'con' is a numpy array, of np.float64 dtype
     if isinstance(a, np.ndarray): pass
     else:
-        raise TypeError( "'con' must be numpy array, but %s found" %type(a) )
+        raise TypeError( f"'con' must be numpy array, but {type(a)} found" )
 
     # Make sure 'con' is a 2D array
     conshape = np.shape(a)
     if np.ndim(a)==2 and conshape[0]==conshape[1]: pass
     else:
-        raise ValueError( "'con' must be a square matrix, but shape %s found" %str(np.shape(a)) )
+        raise ValueError( f"'con' must be a square matrix, but shape {a.shape} found" )
 
 def validate_tensor(a):
     """
@@ -72,7 +72,7 @@ def validate_tensor(a):
     # Make sure 'tensor' is a numpy array, of np.float64 dtype
     if isinstance(a, np.ndarray): pass
     else:
-        raise TypeError( "'con' must be numpy array, but %s found" %type(a) )
+        raise TypeError( f"'con' must be numpy array, but {type(a)} found" )
 
     # Make sure 'tensor' is a 3D array of suitable shape
     tenshape = np.shape(a)
@@ -89,14 +89,11 @@ def validate_X0(a, N):
         a = a * np.ones(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
-        raise TypeError(
-        "'X0' must be either scalar or numpy array, but %s found" %type(a) )
+        raise TypeError( f"'X0' must be either scalar or numpy array, but {type(a)} found" )
 
     # Make sure 'X0' is a 1D array
     if np.ndim(a) != 1:
-        raise ValueError(
-        "'X0' must be either scalar or 1-dimensional of length N, but shape %s found"
-        %str(np.shape(a)) )
+        raise ValueError( f"'X0' must be either scalar or 1-dimensional of length N, but shape {a.shape} found" )
 
     return a
 
@@ -110,14 +107,11 @@ def validate_S0(a, N):
         a = a * np.ones(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
-        raise TypeError(
-        "'S0' must be either scalar or numpy array, but %s found" %type(a) )
+        raise TypeError( f"'S0' must be either scalar or numpy array, but {type(a)} found" )
 
     # Make sure 'S0' is a 1D array
     if np.ndim(a) != 1:
-        raise ValueError(
-        "'S0' must be either scalar or 1-dimensional of length N, but shape %s found"
-        %str(np.shape(a)) )
+        raise ValueError( f"'S0' must be either scalar or 1-dimensional of length N, but shape {a.shape} found" )
 
     return a
 
@@ -137,8 +131,7 @@ def validate_S0matrix(a, N):
             a = a * np.identity(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
-        raise TypeError(
-        "'S0' must be either scalar or numpy array, but %s found" %type(a) )
+        raise TypeError( f"'S0' must be either scalar or numpy array, but {type(a)} found" )
 
     # If 'S0' is an array, convert input to a matrix
     if np.ndim(a)== 1:
@@ -151,16 +144,15 @@ def validate_S0matrix(a, N):
     elif np.ndim(a)==2:
         conshape = np.shape(a)
         if conshape[0]!=conshape[1]:
-            raise ValueError( "'S0' not a square matrix, shape %s found" %str(np.shape(a)) )
+            raise ValueError( f"'S0' not a square matrix, shape {a.shape} found" )
     else:
-        raise ValueError( "'S0' not a square matrix, shape %s found" %str(np.shape(a)) )
+        raise ValueError( f"'S0' not a square matrix, shape {a.shape} found" )
 
     # Finally, make sure all eigenvalues are positive
     evs = numpy.linalg.eigvals(a)
     evmin = evs.min()
     if evmin < -zero_tol:
-        raise ValueError(
-        "'S0' not a correlation matrix, at least one negative eigenvalue found: %f." %evmin )
+        raise ValueError( f"'S0' not a correlation matrix, at least one negative eigenvalue found: {evmin}." )
 
     return a
 
@@ -174,14 +166,11 @@ def validate_tau(a, N):
         a = a * np.ones(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
-        raise TypeError(
-        "'tau' must be either scalar or numpy array, but %s found" %type(a) )
+        raise TypeError( f"'tau' must be either scalar or numpy array, but {type(a)} found" )
 
     # Make sure 'tau' is a 1D array
     if np.ndim(a) != 1:
-        raise ValueError(
-        "'tau' must be either scalar or 1-dimensional of length N, but shape %s found"
-        %str(np.shape(a)) )
+        raise ValueError( f"'tau' must be either scalar or 1-dimensional of length N, but shape {a.shape} found" )
 
     return a
 
@@ -201,7 +190,7 @@ def validate_noise(a, N, tmax, timestep):
             pass
         elif a < 0:
             # 'noise' must be positive
-            raise ValueError( "'noise' amplitude must be positive, %f found" %a )
+            raise ValueError( f"'noise' amplitude must be positive, {a} found" )
         else:
             # If positive scalar given, generate the array for the noise
             namp = a
@@ -212,13 +201,11 @@ def validate_noise(a, N, tmax, timestep):
     elif isinstance(a, np.ndarray):
         pass
     else:
-        raise TypeError(
-        "'noise' must be None, scalar or numpy array, but %s found" %type(a) )
+        raise TypeError( f"'noise' must be None, scalar or numpy array, but {type(a)} found" )
 
     # Make sure 'noise' is returned a 2D array
     if a is not None and np.ndim(a) != 2:
-        raise ValueError(
-        "'noise' must be a 2-dimensional, but shape %s found" %str(np.shape(a)) )
+        raise ValueError( f"'noise' must be a 2-dimensional, but shape {a.shape} found" )
 
     return a
 
