@@ -2,8 +2,8 @@
 
 Given that in the new Perspective Article in which we call for a model-based network analyses using different canonical models, we need a complete new roadmap for v2 of the library. We need to provide two new things:
 
-1. (DONE) The functions to calculate the response matrices (tensors) for the different canonical models, regardless of whether they are time-discrete or time-continuous.
-2. (DONE) A new module with the code to simulate and get the temporal solutions **x**(t) for the nodes for each canonical model.
+1. The functions to calculate the response matrices (tensors) for the different canonical models, regardless of whether they are time-discrete or time-continuous.
+2. A new module with the code to simulate and get the temporal solutions **x**(t) for the nodes for each canonical model.
 
 I guess that version v1 of *SiReNetA* is going to be transparent from the point of view of the code but will have several redundant functions with similar names, specially those to generate the response matrices under the different models. We should make v2 an object-oriented library which would reduce the number of "functions" and names the users need to remember. That is, only one function (with different options, of course) to generate the tensor of the response matrices, and another function to compute the solutions **x**(t). Those two functions will then be called specifying the canonical model and the particular parameters if the model needs that. E.g., the decay time-constant for the leaky-cascade (MOU).
 
@@ -12,6 +12,7 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 
 ### Pending
 
+<<<<<<< Updated upstream
 - Revise *ALL* strings for adequate (more modern Python) styles. The f'…' formatting should particularly be useful for all **warnings** and **error messages**. So, specifically to revise:
 	- Security checks at the beginning of every function.
 	- Everything on *io_helpers.py* module !! 
@@ -22,6 +23,18 @@ In any case, v2 has to be a clean and coherent library such that the transition 
     	- (WAS: We need a function to verify the response curve has reached "zero". Not sure of the criteria that should be applied to this, specially considering the small numbers that flows tend to have. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. If the responses haven't properly decay, the function should return a warning, recommending to run longer simulations.)
 	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self 
 	- (DONE, `metrics.SelfResponses()`) We need a function to extract and study the evolution of the self-interactions. That is, the temporal response of a node to a perturbation on itself at time t = 0. This is in a way what Ernesto called "returnability" but we have that over time. Remind that in graphs the clustering coefficient is indeed calculated in this manner, for loops of lenght = 3, but longer loops could be included.)
+=======
+- Add functions to *core.py* module to compute R(t) for the different models:
+	- ~~Unify the functions for the MOU case into one function~~.
+	- ~~R(t) for the constinuous cascade~~.
+	- ~~R(t) for the discrete cascade~~.
+	- ~~R(t) for the random walks~~.
+	- ~~R(t) for the continuous diffusion~~.
+- Add functions to the *metrics.py* module:
+	- ~~To return the peak flows~~. I know, it is really trivial to compute but… we need to give these things in functions for beginer users.
+	- Send warning if tensor values are farther than zero for a tolerance, with good default value that can also be adjusted (WAS: We need a function to verify the response curve has reached "zero". Not sure of the criteria that should be applied to this, specially considering the small numbers that flows tend to have. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. If the responses haven't properly decayed, the function should return a warning, recommending to run longer simulations.)
+	- Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self (WAS We need a function to extract and study the evolution of the self-interactions. That is, the temporal response of a node to a perturbation on itself at time t = 0. This is in a way what Ernesto called "returnability" but we have that over time. Remind that in graphs the clustering coefficient is indeed calculated in this manner, for loops of lenght = 3, but longer loops could be included.)
+>>>>>>> Stashed changes
 	- Add a function to estimate time-to-threshold. For models that diverge. This is an extension of the graph distance for binary network where threshold = 1 should be the default (for discrete cascade).
 
 - (DONE) What to do about the `sigma` parameter that we only have for the MOU? It expects a matrix, not a vector of input amplitudes to the nodes.
