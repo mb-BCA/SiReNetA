@@ -257,7 +257,9 @@ def Time2Peak(arr, timestep):
 
     # 1) Get the indices at which every element peaks
     ttp_arr = arr.argmax(axis=0)
-    # 2) Convert into simulation time
+    # 2) Identify disconnected pairs
+    ttp_arr =np.where(ttp_arr==0, np.inf, ttp_arr)
+    # 3) Convert into simulation time
     ttp_arr = timestep * ttp_arr
 
     return ttp_arr
