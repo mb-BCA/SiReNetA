@@ -1,4 +1,4 @@
-# Roadmap for first version of ReNetA
+# Roadmap for first version of SiReNetA
 
 Given that in the new Perspective Article in which we call for a model-based network analyses using different canonical models, we need a complete new roadmap for v2 of the library. We need to provide two new things:
 
