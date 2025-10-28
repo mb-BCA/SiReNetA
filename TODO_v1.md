@@ -16,8 +16,8 @@ In any case, v2 has to be a clean and coherent library such that the transition 
     - ~~The error messages on *io_helpers.py* module~~ !! 
     - Security checks at the beginning of every function.
 - Write the **stringdoc** documentation for:
-    - Beginning of *io_helpers.py* module.
-    - All funtions in *io_helpers.py* module.
+    - ~~Beginning of *io_helpers.py* module~~.
+    - ~~All funtions in *io_helpers.py* module~~.
     - …
 - Add functions to *responses.py* module to compute R(t) for the different models:
 	- ~~Unify the functions for the MOU case into one function~~.
