@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+# Copyright 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 # Contact: gorka@zamora-lopez.xyz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,19 +22,23 @@ This module contains functions to help IO operations, specially to carry the
 validation checks for the user inputs (parameters to functions) and ensure all
 relevant arrays are given in the correct data type.
 
-TODO: FINISH DOCSTRINGS AND SUMMARY OF THE FUNCTIONS
-
-Input handling
---------------
-function_name
-    Description here.
-function_name
-    Description here.
-function_name
-    Description here.
-
+Input handling functions
+------------------------
+validate_con
+    Check if user input `con` is a suitable connectivity matrix.
+validate_X0
+    Check if user input `X0` is a suitable array of initial conditions.
+validate_S0
+    Check if user input `S0`is a suitable array of stimulus amplitudes.
+validate_S0matrix
+    Check if user input `Somatrix` is a suitable matrix of stimulus correlations.
+validate_tau
+    Check if user input `tau` is a suitable object of time-constants.
+validate_noise
+    Check if user input `noise` is a suitable object for noise.
 """
-# Standard libary imports
+
+# Standard library imports
 import numbers
 # Third party packages
 import numpy as np
@@ -43,10 +47,10 @@ import numpy.random
 
 
 ## INPUT HANDLING FUNCTIONS ###################################################
-## TODO: These functions should be named 'validate_xxxx()' or 'check_xxxxx()' ?
 def validate_con(a):
     """
-    THIS FUNCTION DOES NOT RETURN ANYTHING. IT ONLY CHECKS THE MATRIX
+    This function returns nothing. It only checks the connectivity matrix given
+    by the user.
     """
     # Make sure 'con' is a numpy array, of np.float64 dtype
     if isinstance(a, np.ndarray): pass
@@ -58,14 +62,15 @@ def validate_con(a):
     if np.ndim(a)==2 and conshape[0]==conshape[1]: pass
     else:
         raise ValueError( "'con' must be a square matrix, but shape %s found" %str(np.shape(a)) )
-    # return a
 
-def validate_X0(a, n_nodes):
+def validate_X0(a, N):
     """
+    This function checks the initial conditions given by the user. If `X0` is
+    a scalar, returns it as a numpy array to the handling function.
     """
     # Make sure 'X0' is a numpy array, of np.float64 dtype
     if isinstance(a, numbers.Number) and type(a) != bool:
-        a = a * np.ones(n_nodes, np.float64)
+        a = a * np.ones(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
         raise TypeError(
@@ -79,12 +84,14 @@ def validate_X0(a, n_nodes):
 
     return a
 
-def validate_S0(a, n_nodes):
+def validate_S0(a, N):
     """
+    This function checks the initial stimulus amplitudes given by the user.
+    If `S0` is a scalar, returns it as a numpy array to the handling function.
     """
     # Make sure 'S0' is a numpy array, of np.float64 dtype
     if isinstance(a, numbers.Number) and type(a) != bool:
-        a = a * np.ones(n_nodes, np.float64)
+        a = a * np.ones(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
         raise TypeError(
@@ -98,8 +105,11 @@ def validate_S0(a, n_nodes):
 
     return a
 
-def validate_S0matrix(a, n_nodes):
+def validate_S0matrix(a, N):
     """
+    This function checks the matrix of initial stimulus correlations given by
+    the user. If `S0matrix` is a scalar or a 1D array, returns it as a 2D array
+    to the handling function.
     """
     zero_tol = 1e-12
 
@@ -108,7 +118,7 @@ def validate_S0matrix(a, n_nodes):
         if a < -zero_tol:
             raise ValueError("'S0' as numerical value entered, must be positive")
         else:
-            a = a * np.identity(n_nodes, np.float64)
+            a = a * np.identity(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
         raise TypeError(
@@ -120,7 +130,7 @@ def validate_S0matrix(a, n_nodes):
         if amin < -zero_tol:
             raise ValueError("'S0' as 1d-array entered, all values must be positive")
         else:
-            a = a * np.identity(n_nodes, np.float64)
+            a = a * np.identity(N, np.float64)
     # If 'S0' is a 2D array, make sure it is a square matrix
     elif np.ndim(a)==2:
         conshape = np.shape(a)
@@ -138,12 +148,14 @@ def validate_S0matrix(a, n_nodes):
 
     return a
 
-def validate_tau(a, n_nodes):
+def validate_tau(a, N):
     """
+    This function checks the set of time-constants given by the user. If `tau` is
+    a scalar, returns it as a numpy array to the handling function.
     """
     # Make sure 'tau' is a numpy array, of np.float64 dtype
     if isinstance(a, numbers.Number) and type(a) != bool:
-        a = a * np.ones(n_nodes, np.float64)
+        a = a * np.ones(N, np.float64)
     elif isinstance(a, np.ndarray): pass
     else:
         raise TypeError(
@@ -157,8 +169,46 @@ def validate_tau(a, n_nodes):
 
     return a
 
+def validate_noise(a, N, tmax, timestep):
+    """
+    This function checks the noise object given by the user. If `noise` is
+    a scalar, returns it as a numpy array to the handling function.
+    """
+    # When nothing is given by user, skip noise generation
+    if a is None:
+        pass
+    # When 'noise' is a scalar ...
+    elif isinstance(a, numbers.Number):
+        if not a:
+            # If zero or False, do nothing
+            a = None
+            pass
+        elif a < 0:
+            # 'noise' must be positive
+            raise ValueError( "'noise' amplitude must be positive, %f found" %a )
+        else:
+            # If positive scalar given, generate the array for the noise
+            namp = a
+            nnorm = np.sqrt(2.0 * namp * timestep)
+            nt = round(tmax / timestep) + 1
+            a = nnorm * numpy.random.randn(nt, N)
+    # Make sure 'noise' is a numpy array, of np.float64 dtype
+    elif isinstance(a, np.ndarray):
+        pass
+    else:
+        raise TypeError(
+        "'noise' must be None, scalar or numpy array, but %s found" %type(a) )
 
-# def validate_scalar_1darr(a, n_nodes):
+    # Make sure 'noise' is returned a 2D array
+    if a is not None and np.ndim(a) != 2:
+        raise ValueError(
+        "'noise' must be a 2-dimensional, but shape %s found" %str(np.shape(a)) )
+
+    return a
+
+
+
+# def validate_scalar_1darr(a, N):
 #     """
 #     """
 #     # Get the global name of parameter 'a'
@@ -181,7 +231,7 @@ def validate_tau(a, n_nodes):
 #
 #     # Make sure 'a' is a numpy array, of np.float64 dtype
 #     if isinstance(a, numbers.Number):
-#         a = a * np.ones(n_nodes, np.float64)
+#         a = a * np.ones(N, np.float64)
 #     if isinstance(a, np.ndarray): pass
 #     elif isinstance(a, (list,tuple)):
 #         a = np.array(a, np.float64)
@@ -193,43 +243,6 @@ def validate_tau(a, n_nodes):
 #         raise ValueError( "'%s' must be a 1-dimensional array of length N" %gname_a)
 #
 #     return a
-
-
-def validate_noise(a, n_nodes, tmax, timestep):
-    """
-    """
-    # When nothing is given by user, skip noise generation
-    if a is None:
-        pass
-    # When 'noise' is a scalar ...
-    elif isinstance(a, numbers.Number):
-        if not a:
-            # If zero or False, do nothing
-            a = None
-            pass
-        elif a < 0:
-            # 'noise' must be positive
-            raise ValueError( "'noise' amplitude must be positive, %f found" %a )
-        else:
-            # If positive scalar given, generate the array for the noise
-            namp = a
-            nnorm = np.sqrt(2.0 * namp * timestep)
-            nt = round(tmax / timestep) + 1
-            a = nnorm * numpy.random.randn(nt, n_nodes)
-    # Make sure 'noise' is a numpy array, of np.float64 dtype
-    elif isinstance(a, np.ndarray):
-        pass
-    else:
-        raise TypeError(
-        "'noise' must be None, scalar or numpy array, but %s found" %type(a) )
-
-    # Make sure 'noise' is a 2D array
-    if a is not None and np.ndim(a) != 2:
-        raise ValueError(
-        "'noise' must be a 2-dimensional, but shape %s found" %str(np.shape(a)) )
-
-    return a
-
 
 
 
