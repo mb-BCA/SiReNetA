@@ -167,6 +167,55 @@ def NodeResponses(tensor, selfresp=True):
     node_resps = ( inflows, outflows )
     return node_resps
 
+def NodeResponses2(tensor, selfresp=True):
+    # TODO: Test and compare this function!
+    # Q: Does this function alter on-stie the input tensor variable??
+    """
+    Temporal evolution of the input and output responses for each node.
+
+    Parameters
+    ----------
+    tensor : ndarray (3d) of shape (nt,N,N)
+        Temporal evolution of the pair-wise responses, as calculated by one of
+        the functions of module *responses.py*.
+    selfresp : boolean
+        If `True` (default), returns the in-/out-responses of the nodes,
+        summing also the self-responses: the response of a node to the
+        initial stimulus applied on itself. That is, adds the diagonal $R_{ii}(t)$
+        entries to the row and column sums.
+        If `False`, excludes the response of a node to the stimulus applied on
+        itself. Excludes the diagonal entries $R_{ii}(t)$ in the row and
+        column sums.
+
+    Returns
+    -------
+    node_resps : tuple contaning two ndarrays (2d) of shape (nt,N).
+        The temporal evolution of the input and output responses for all nodes.
+        `node_resps[0]` is the input responses into the nodes node and
+        `node_resps[1]` the output node responses.
+
+    See Also
+    --------
+    SelfResponses : Temporal evolution of the responses of nodes due to stimulus on themselves.
+    """
+    # 0) CHECK THE USER INPUT
+    io_helpers.validate_tensor(tensor)
+
+    # 1) Calculate the input and output node properties
+    # Set self-responses to zero
+    if not selfresp:
+        nt, N,N = arr.shape
+        diagidx = np.diag_indices(N)
+        for t in range(nt):
+            tensor[t][diagidx] = 0
+
+    # Calculate the input and output flows to each node
+    inflows = tensor.sum(axis=2)
+    outflows = tensor.sum(axis=1)
+
+    node_resps = ( inflows, outflows )
+    return node_resps
+
 def SelfResponses(tensor):
     """
     Temporal evolution of the responses of nodes due to stimulus on themselves.
