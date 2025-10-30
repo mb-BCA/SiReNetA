@@ -31,7 +31,8 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 	- ~~Add a function to extract and study the evolution of the self-interactions~~. DONE,  see function `metrics.SelfResponses()`.
 	- ~~Function `Time2Peak()` should return `np.inf` for those pair-wise elements when there is no input in a node. Now, it returns zeros in those cases~~.
 	- ~~Add option to remove diagonal elements of tensor, but keep default for NodeResponses as summing all incoming/outgoing interactions including self~~. 
-	- Test alternative function for `NodeResponses()`. Does this option-2 alter the input `tensor` on-site?
+	- ~~Test alternative function for `NodeResponses()`. Does this option-2 alter the input `tensor` on-site?~~ Yes, it altered `tensor` variable, thus function discarded.
+	- ~~Include an option to `GlobalResponse()` function to exclude the self-responses~~.
 	- For response tensors $R(t)$, add validation they converged to zero. Send warning otherwirse, recommending to run longer simulation.
 	- For `AreaUnderCurve()` function, send warning if tensor values are farther than zero for a given tolerance. At this moment, it is the user's responsability to guarantee that all the curves have decayed reasonably well. So, if the responses didn't properly decay, the function should return a warning recommending to run longer simulations.)
 	- (FOR LATER) Same for function `Time2Decay()` and/or `Time2Convergence()`. Should send warning when it returns the duration of the simulation in those cases???
