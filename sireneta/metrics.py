@@ -62,7 +62,7 @@ from . import io_helpers
 # TODO: REVISE AND ADAPT ALL THE DOCSTRING DESCRIPTIONS
 
 ## METRICS EXTRACTED FROM THE PAIR-WISE RESPONSE TENSORS #######################
-def GlobalResponse(tensor):
+def GlobalResponse(tensor, selfresp=True):
     """
     Calculates network response over time, summed over all pair-wise responses.
 
@@ -71,6 +71,14 @@ def GlobalResponse(tensor):
     tensor : ndarray (3d) of shape (nt,N,N)
         Temporal evolution of the pair-wise responses, as calculated by one of
         the functions of module *responses.py*.
+    selfresp : boolean
+        If `True` (default), returns the global response summing also the
+        self-responses: the response of a node to the initial stimulus applied
+        on itself. That is, adds the diagonal $R_{ii}(t)$ entries to the row and
+        column sums.
+        If `False`, excludes the response of a node to the stimulus applied on
+        itself. Excludes the diagonal entries $R_{ii}(t)$ in the row and
+        column sums.
 
     Returns
     -------
@@ -83,6 +91,11 @@ def GlobalResponse(tensor):
 
     # 1) Compute the global network responses over time (nt)
     global_response = tensor.sum(axis=(1,2))
+
+    if not selfresp:
+        nt = len(tensor)
+        for t in range(nt):
+            global_response[t] -= tensor[t].trace()
 
     return global_response
 
@@ -190,7 +203,7 @@ def SelfResponses(tensor):
     io_helpers.validate_tensor(tensor)
 
     # 1) Calculate the self reponses
-    nt, N,N = arr.shape
+    nt, N,N = tensor.shape
     self_resps = np.zeros((nt,N), np.float64)
     for i in range(N):
         self_resps[:,i] = tensor[:,i,i]
