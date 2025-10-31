@@ -64,19 +64,19 @@ import numpy as np
 
 
 ## RANDOM NETWORK MODELS #######################################################
-def GenRandomWeightedNet(N, con_prob, w_distr, **arg_w_distr):
+def GenRandomWeightedCon(N, con_prob, w_distr, **arg_w_distr):
     """
-    Generates a squared connectivity matrix for a random network with given
-    probability of connection between each pair of nodes, with a given weight
-    distribution (like numpy.random.uniform or scipy.stats.uniform,
-    scipy.stats.norm).
+    Generates a random connectivity matrix, of given connection probability
+    between each pair of nodes and connection weights following a desired
+    distribution, e.g., numpy.random.uniform or scipy.stats.uniform, scipy.stats.norm).
+    The resulting connectivity is directed (
 
     Parameters
     ----------
     N : integer.
-        The dimension the squared connectivity matrix.
+        Number of nodes.
     con_prob : float.
-        The probability connection for each link.
+        The probability of connection for every link (pair of nodes).
     w_distr : function.
         The distribution function for drawing weight samples, it must have a
         'size' argument for the number of generated samples.
@@ -85,7 +85,7 @@ def GenRandomWeightedNet(N, con_prob, w_distr, **arg_w_distr):
 
     Returns
     -------
-    con : ndarray of rank-2 and shape (N x N).
+    con : ndarray (2d) of shape (N x N).
         A random connectivity matrix.
 
     Examples
@@ -97,17 +97,19 @@ def GenRandomWeightedNet(N, con_prob, w_distr, **arg_w_distr):
     """
     # 0) SECURITY CHECKS
     if not type(N) == int:
-        raise TypeError( "Please enter the matrix shape as integer." )
+        raise TypeError( "Please enter the number of nodes 'N' as an integer." )
     if (not type(con_prob) == float) or con_prob < 0.0 or con_prob > 1.0:
         raise TypeError( "Please enter the probability of connection 'con_prob' as float." )
 
-    # 1) GENERATE BOOLEAN MASK FOR TOPOLOGY (ADJACENCY MATRIX TRUE/FALSE), WITHOUT SELF-LOOP
+    # 1) GENERATE THE BINARY CONNECTIVITY MATRIX
     adjmatrix = np.random.rand(N, N)
+    # Convert to boolean, with 'True' for thresholded values
     adjmatrix = adjmatrix <= con_prob
+    # Remove potential self-loops
     np.fill_diagonal(adjmatrix, False)
 
-    # 2) POPULATE WITH WEIGHTS
-    con = np.zeros_like(adjmatrix, dtype=float)
+    # 2) SEED THE WEIGHTS
+    con = np.zeros_like(adjmatrix, dtype=np.float64)
     con[adjmatrix] = w_distr(**arg_w_distr, size=adjmatrix.sum())
 
     return con
