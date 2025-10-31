@@ -37,21 +37,20 @@ Please see doctsring of module "galib.models" for a list of functions.  ::
     >>> help(galib.models)
 
 
-Generation of directed and weighted networks
+Generation of random weighted connectivities
 --------------------------------------------
-GenRandomWeightedNet
-    Generates a randomly directed network (Erdős–Rényi) with given probability
-    of connection and weight distribution.
-GenRandomMaskNet
-    Generates a connectivity matrix with a given topology and random weights
-    according to a given distribution.
+GenRandomWeightedCon
+    Generates a randomly directed network for specified link probability and
+    weight distribution.
+SeedRandomWeights
+    Assigns random weights to the links of a given connectivity matrix.
 
-Surrogate methods for directed weighted networks
-------------------------------------------------
-ShuffleWeightsFixedLinks
+Functions to randomize connectivity matrices (surrogate generation)
+-------------------------------------------------------------------
+ShuffleLinkWeights
     Randomly re-allocates the weights of the links without changing the links.
 ShuffleLinks
-    Randomises a connectivity matrix (links with weights).
+    Fully randomises a connectivity matrix, both links and their weights.
 """
 
 # Standard library imports
@@ -174,10 +173,9 @@ def RndNonNormalNet(con):
     raise ValueError( "Not implemented yet" )
 
 
-## RANDOMIZED SURROGATE NETWORKS ############################################
-# NOTE: See GAlib.models package
 
-def ShuffleWeightsFixedLinks(con):
+## NETWORK RANDOMIZATION FUNCTIONS (SURROGATE GENERATION) ######################
+def ShuffleLinkWeights(con):
     """
     Randomly re-allocates the link weights of an input network.
 
