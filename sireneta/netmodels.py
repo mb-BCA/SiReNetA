@@ -77,11 +77,11 @@ def GenRandomWeightedCon(N, con_prob, w_distr, directed=True, **arg_w_distr):
         The probability of connection for every link (pair of nodes).
     w_distr : function
         The distribution function for drawing weight samples, it must have a
-        'size' argument for the number of generated samples.
+        `size` argument for the number of generated samples.
     directed : boolean (optional)
         True if a directed graph is desired. False, for an undirected graph.
     arg_w_distr : dictionary or named arguments
-        The other arguments necessary to define 'w_distr'.
+        The other arguments necessary to define `w_distr`.
 
     Returns
     -------
@@ -127,26 +127,26 @@ def SeedRandomWeights(con, w_distr, **arg_w_distr):
     are sampled from a given distribution, e.g., numpy.random.uniform,
     scipy.stats.uniform or scipy.stats.norm.
 
-    NOTE: The function does not change the input 'con' in place, it returns a
-    copy of 'con' with the new weights.
+    NOTE: The function does not change the input `con` in place, it returns a
+    copy of `con` with the new weights.
 
     Parameters
     ----------
     con : ndarray (2d) of shape (N,N).
         The matrix of a network whose weights want to be randomly assigned.
-        'con' can be either a connectivity matrix (already weighted or not), or
-        the mask (boolean matrix) of an existing 'con'.
+        `con` can be either a connectivity matrix (already weighted or not), or
+        the mask (boolean matrix) of an existing `con`.
     w_distr : function.
         The distribution function for drawing weight samples, it must have a
-        'size' argument for the number of generated samples.
+        `size` argument for the number of generated samples.
     arg_w_distr : dictionary or named arguments.
-        The other arguments necessary to define 'w_distr'.
+        The other arguments necessary to define `w_distr`.
 
     Returns
     -------
     con : ndarray (2d) of shape (N,N).
-        A connectivity matrix with same links as input 'con' but link weights
-        reassigned, drawn from distribution 'w_distr'.
+        A connectivity matrix with same links as input `con` but link weights
+        reassigned, drawn from distribution `w_distr`.
     """
     # 0) SECURITY CHECKS
     io_helpers.validate_con(con)
@@ -185,8 +185,8 @@ def ShuffleLinkWeights(con):
     the weights associated to the links. Therefore, the binarised version
     is preserved.
 
-    NOTE: The function does not change the input 'con' in place, it returns a
-    copy of 'con' with the weights shuffled.
+    NOTE: The function does not change the input `con` in place, it returns a
+    copy of `con` with the weights shuffled.
 
 
     Parameters
