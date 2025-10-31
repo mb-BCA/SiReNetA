@@ -176,12 +176,18 @@ def RndNonNormalNet(con):
 
 ## NETWORK RANDOMIZATION FUNCTIONS (SURROGATE GENERATION) ######################
 def ShuffleLinkWeights(con):
+    # TODO: this function could/should identify whether 'con' is (un)directed
+    # and thus return (a)symmetric matrix accordingly.
     """
     Randomly re-allocates the link weights of an input network.
 
     The function does not alter the position of the links, it only shuffles
     the weights associated to the links. Therefore, the binarised version
     is preserved.
+
+    NOTE: The function does not change the input 'con' in place, it returns a
+    copy of 'con' with the weights shuffled.
+
 
     Parameters
     ----------
@@ -190,30 +196,24 @@ def ShuffleLinkWeights(con):
 
     Returns
     -------
-    newcon : ndarray of rank-2 and shape (N x N).
+    newcon : ndarray (2d) of shape (N,N).
         A connectivity matrix with links between same nodes as `con` but the
         link weights shuffled.
-
     """
     # 0) SECURITY CHECKS
-    if not type(con) == np.ndarray:
-        raise TypeError( "Please enter the connectivity matrix as a numpy array." )
-    con_shape = np.shape(con)
-    if (len(con_shape) != 2) or (con_shape[0] != con_shape[1]):
-        raise ValueError( "Input not aligned. 'con' should be a 2D array of shape (N x N)." )
+    io_helpers.validate_con(con)
 
-    # 1) EXTRACT THE CONSTRAINTS FROM THE con MATRIX
+    # 1) Extract the weights from 'con'
     nzidx = con.nonzero()
     weights = con[nzidx]
 
-    # 2) GENERATE THE NEW NETWORK WITH THE WEIGHTS SHUFFLED
+    # 2) Generate the new network with the weights shuffled
     np.random.shuffle(weights)
-    newcon = np.zeros_like(con, dtype=con.dtype)
+    newcon = np.zeros_like(con, dtype=np.float64)
     newcon[nzidx] = weights
 
     return newcon
 
-#@jit
 def ShuffleLinks(con):
     """
     Randomises a connectivity matrix and its weights.
