@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+# Copyright 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 # Contact: gorka@zamora-lopez.xyz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # limitations under the License.
 
 
-# TODO: REVISE ALL THESE FUNCTIONS. DO WE WANT THEM HERE OR ... SHALL THEY BE
-# ADDED TO GAlib AND IMPORTED FROM THERE ?
+# TODO: REVISE ALL THESE FUNCTIONS. DO WE WANT THEM HERE OR ...
+# TODO: Add aliases to functions in GAlib, once GAlib is properly updated in PyPI
 
 # NOTE: THIS MODULE IS NOT NEEDED IN THE FIRST RELEASE. WORK ON IT AFTERWARDS !!
 
@@ -37,22 +37,19 @@ Please see doctsring of module "galib.models" for a list of functions.  ::
     >>> help(galib.models)
 
 
-Generator of directed weighted networks
----------------------------------------
+Generation of directed and weighted networks
+--------------------------------------------
 GenRandomWeightedNet
     Generates a randomly directed network (Erdős–Rényi) with given probability
     of connection and weight distribution.
-
 GenRandomMaskNet
-    Generates a network with a given topology and random weights according to a
-    given distribution.
+    Generates a connectivity matrix with a given topology and random weights
+    according to a given distribution.
 
 Surrogate methods for directed weighted networks
 ------------------------------------------------
 ShuffleWeightsFixedLinks
-    Randomly re-allocates the weights associated to the links without breaking
-    the network topology.
-
+    Randomly re-allocates the weights of the links without changing the links.
 ShuffleLinks
     Randomises a connectivity matrix (links with weights).
 """
@@ -61,16 +58,13 @@ ShuffleLinks
 
 # Third party packages
 import numpy as np
+# import galib.models
 #from numba import jit
 
-# import galib
-# from galib.models import*
 
 
-
-## RANDOM NETWORK MODELS #########################################################
-
-def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
+## RANDOM NETWORK MODELS #######################################################
+def GenRandomWeightedNet(N, con_prob, w_distr, **arg_w_distr):
     """
     Generates a squared connectivity matrix for a random network with given
     probability of connection between each pair of nodes, with a given weight
@@ -79,7 +73,7 @@ def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
 
     Parameters
     ----------
-    con_N : integer.
+    N : integer.
         The dimension the squared connectivity matrix.
     con_prob : float.
         The probability connection for each link.
@@ -95,20 +89,20 @@ def GenRandomWeightedNet(con_N, con_prob, w_distr, **arg_w_distr):
         A random connectivity matrix.
 
     Examples
-    -------;:-
+    --------
     GenRandomWeightedNet(3, 0.7, np.random.uniform, low=0.0, high=1.0)
     GenRandomWeightedNet(3, 0.7, np.random.normal, loc=0.0, scale=1.0)
     GenRandomWeightedNet(3, 0.7, w_smpl)
         with def w_smpl(size): return np.random.uniform(low=0.0, high=1.0, size=size)
     """
     # 0) SECURITY CHECKS
-    if not type(con_N) == int:
+    if not type(N) == int:
         raise TypeError( "Please enter the matrix shape as integer." )
     if (not type(con_prob) == float) or con_prob < 0.0 or con_prob > 1.0:
         raise TypeError( "Please enter the probability of connection 'con_prob' as float." )
 
     # 1) GENERATE BOOLEAN MASK FOR TOPOLOGY (ADJACENCY MATRIX TRUE/FALSE), WITHOUT SELF-LOOP
-    adjmatrix = np.random.rand(con_N, con_N)
+    adjmatrix = np.random.rand(N, N)
     adjmatrix = adjmatrix <= con_prob
     np.fill_diagonal(adjmatrix, False)
 
@@ -138,7 +132,7 @@ def GenRandomMaskNet(mask_con, w_distr, **arg_w_distr):
     Returns
     -------
     con : ndarray of rank-2 and shape (N x N).
-        A connectivity matrix with otopoly determined by 'mask_con' and random
+        A connectivity matrix with topology determined by 'mask_con' and random
         weights drawn from the distribution 'w_distr'.
     """
     # 0) SECURITY CHECKS
