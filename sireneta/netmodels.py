@@ -64,7 +64,7 @@ import numpy as np
 
 
 ## RANDOM NETWORK MODELS #######################################################
-def GenRandomWeightedCon(N, con_prob, w_distr, **arg_w_distr):
+def GenRandomWeightedCon(N, con_prob, w_distr, directed=True, **arg_w_distr):
     """
     Generates a random connectivity matrix, of given connection probability
     between each pair of nodes and connection weights following a desired
@@ -73,20 +73,22 @@ def GenRandomWeightedCon(N, con_prob, w_distr, **arg_w_distr):
 
     Parameters
     ----------
-    N : integer.
+    N : integer
         Number of nodes.
-    con_prob : float.
+    con_prob : float
         The probability of connection for every link (pair of nodes).
-    w_distr : function.
+    w_distr : function
         The distribution function for drawing weight samples, it must have a
         'size' argument for the number of generated samples.
-    arg_w_distr : dictionary or named arguments.
+    directed : boolean (optional)
+        True if a directed graph is desired. False, for an undirected graph.
+    arg_w_distr : dictionary or named arguments
         The other arguments necessary to define 'w_distr'.
 
     Returns
     -------
-    con : ndarray (2d) of shape (N x N).
-        A random connectivity matrix.
+    con : ndarray (2d) of shape (N,N).
+        Connectivity matrix for a network with randomly seeded links and weights.
 
     Examples
     --------
@@ -111,6 +113,11 @@ def GenRandomWeightedCon(N, con_prob, w_distr, **arg_w_distr):
     # 2) SEED THE WEIGHTS
     con = np.zeros_like(adjmatrix, dtype=np.float64)
     con[adjmatrix] = w_distr(**arg_w_distr, size=adjmatrix.sum())
+
+    # 3) In case of undirected connectivity desired
+    if not directed:
+        con[np.triu_indices(N,k=1)] = 0
+        con += con.T
 
     return con
 
