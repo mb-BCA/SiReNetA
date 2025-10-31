@@ -188,7 +188,6 @@ def ShuffleLinkWeights(con):
     NOTE: The function does not change the input `con` in place, it returns a
     copy of `con` with the weights shuffled.
 
-
     Parameters
     ----------
     con : ndarray (2d) of shape (N,N).
@@ -262,3 +261,9 @@ def ShuffleLinks(con):
     newcon[idx] = weights
 
     return newcon
+
+
+
+
+
+###
