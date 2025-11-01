@@ -190,7 +190,7 @@ def Sim_ContCascade(con, X0=1.0, noise=None, tmax=10, timestep=0.01):
     noise : None, scalar or ndarray (2d) of shape (nt,N), optional
         Additive noise. If `noise = None` simulation is run without noise.
         If scalar `noise = c`, a Gaussian white noise, centered at zero and
-        variance 'c' is applied to all nodes. Independent for each node.
+        variance `c` is applied to all nodes. Independent for each node.
         Also, `noise = arr` accepts ndarray (arr) of shape (nt, N) with noise
         signals precomputed by the user.
     tmax : scalar, optional
