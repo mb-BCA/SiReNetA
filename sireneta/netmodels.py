@@ -117,9 +117,7 @@ def GenRandomWeightedCon(N, con_prob, w_distr, directed=False, **arg_w_distr):
 
     return con
 
-def SeedRandomWeights(con, w_distr, **arg_w_distr):
-    # TODO: This function could/should identify whether 'con' is (un)directed and
-    # return (a)symmetric weights accordingly.
+def SeedRandomWeights(con, w_distr, impose_directed=False, **arg_w_distr):
     """
     Assigns random weights to the links of a given connectivity matrix. The weights
     are sampled from a given distribution, e.g., numpy.random.uniform,
@@ -137,6 +135,11 @@ def SeedRandomWeights(con, w_distr, **arg_w_distr):
     w_distr : function.
         The distribution function for drawing weight samples, it must have a
         `size` argument for the number of generated samples.
+    impose_directed : boolean
+        The function detects whether `con` is symmetric or asymmetric, and seeds
+        accordingly symmetric or asymmetric weigths.
+        But if `impose_directed = True` is given, it will always return a
+        connectivity matrix with asymmetric weights even if `con` is undirected.
     arg_w_distr : dictionary or named arguments.
         The other arguments necessary to define `w_distr`.
 
@@ -161,9 +164,29 @@ def SeedRandomWeights(con, w_distr, **arg_w_distr):
                         category=RuntimeWarning )
         np.fill_diagonal(mask, False)
 
-    # 1) Create a copy of the matrix and seed the weights to the links
+    # 1) IDENTIFY WHICH ALGORITHM TO USE
+    if impose_directed:
+        algo = 'asymmetric'
+    else:
+        asymmetry = abs(mask ^ mask.T).sum()
+        if asymmetry == 0:
+            algo = 'symmetric'
+        else:
+            algo = 'asymmetric'
+
+    # 2) CREATE A COPY OF THE MATRIX AND SEED THE WEIGHTS TO THE LINKS
     newcon = np.zeros_like(mask, dtype=np.float64)
-    newcon[mask] = w_distr(**arg_w_distr, size=mask.sum())
+    ## The directed case
+    if algo=='asymmetric':
+        newcon[mask] = w_distr(**arg_w_distr, size=mask.sum())
+    elif algo=='symmetric':
+        N = len(con)
+        # Ignor lower triangular entries
+        mask[np.tril_indices(N, k=-1)] = False
+        # Seed the weigths (upper triangular
+        newcon[mask] = w_distr(**arg_w_distr, size=mask.sum())
+        # Add the corresponding symmetric links (lower triangular)
+        newcon = newcon + newcon.T
 
     return newcon
 
