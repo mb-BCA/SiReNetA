@@ -126,7 +126,7 @@ __email__ = "gorka@Zamora-Lopez.xyz"
 __copyright__ = "Copyright 2024 - 2025"
 __license__ = "Apache License version 2.0"
 __version__ = "1.0.0.dev1"
-__update__ = "28/10/2025"
+__update__ = "01/11/2025"
 
 
 
