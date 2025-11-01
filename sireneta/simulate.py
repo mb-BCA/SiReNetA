@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+# Copyright 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 # Contact: gorka@zamora-lopez.xyz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,15 +47,12 @@ theory and the analysis of complex networks" Chaos 34, 041501 (2024).
 DOI: `https://doi.org/10.1063/5.0202241
 <https://doi.org/10.1063/5.0202241>`_
 """
-# TODO: Shall we call these functions as Sim_DiscreteCascade(), Sim_RandomWalk, etc?
-
 # Standard libary imports
 
 # Third party packages
 import numpy as np
 # Local imports from sireneta
 from . import io_helpers
-
 
 
 ## DISCRETE-TIME CANONICAL MODELS #############################################
@@ -127,7 +124,7 @@ def Sim_RandomWalk(con, X0=1.0, tmax=10):
         The connectivity matrix of the network.
     X0 : scalar or ndarray (1d) of length N, optional
         Number of walkers (agents) starting at each node. If scalar value is
-        entered, 'X0 = c', all nodes are initialised with c walkers (same
+        entered, `X0 = c`, all nodes are initialised with c walkers (same
         initial conditions). Default value, X0 = 1.0. If a 1d-array is entered,
         X0[i] walkers are initialised at each node.
     tmax : integer, optional
@@ -346,10 +343,10 @@ def Sim_OrnsteinUhlenbeck(con, X0=1.0, tau=1.0, noise=1.0, tmax=10, timestep=0.0
             xdot(t) = - x(t) / tau + A x(t) + D(t)
 
      With λmax being the largest eigenvalue of the (positive definite) matrix A,
-     - if tau < tau_max = 1 / λmax, then the leakage term dominates in the long
+     - if `tau < tau_max = 1 / λmax`, then the leakage term dominates in the long
      time and the solutions for all nodes converge to zero.
-     - If tau = tau_max, all nodes converge to x_i(t) = 1.
-     - And, if tau < tau_max, then time-courses xdot(t) grow exponentially fast.
+     - If `tau = tau_max`, all nodes converge to x_i(t) = 1.
+     - And, if `tau < tau_max`, then time-courses xdot(t) grow exponentially fast.
 
     Parameters
     ----------
@@ -370,7 +367,7 @@ def Sim_OrnsteinUhlenbeck(con, X0=1.0, tau=1.0, noise=1.0, tmax=10, timestep=0.0
     noise : None, scalar or ndarray (2d) of shape (nt,N), optional
         Additive noise. If `noise = None` simulation is run without noise.
         If scalar `noise = c`, a Gaussian white noise, centered at zero and
-        variance 'c' is applied to all nodes. Independent for each node.
+        variance `c` is applied to all nodes. Independent for each node.
         Also, `noise = arr` accepts ndarray (arr) of shape (nt, N) with noise
         signals precomputed by the user.
     tmax : scalar, optional
@@ -458,7 +455,7 @@ def Sim_ContDiffusion(con, X0=1.0, alpha=1.0, noise=None, tmax=10, timestep=0.01
     noise : None, scalar or ndarray (2d) of shape (nt,N), optional
         Additive noise. If `noise = None` simulation is run without noise.
         If scalar `noise = c`, a Gaussian white noise, centered at zero and
-        variance 'c' is applied to all nodes. Independent for each node.
+        variance `c` is applied to all nodes. Independent for each node.
         Also, `noise = arr` accepts ndarray (arr) of shape (nt, N) with noise
         signals precomputed by the user.
     tmax : scalar, optional
