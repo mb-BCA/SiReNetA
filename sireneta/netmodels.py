@@ -35,19 +35,16 @@ Please see doctsring of module "galib.models" for a list of functions.  ::
 Generation of random weighted networks
 --------------------------------------
 GenRandomWeightedCon
-    Generates a randomly directed network for specified link probability and
-    weight distribution.
+    Generate a random weighted network with specified link probability and weights.
 SeedRandomWeights
-    Assigns random weights to the links of a given connectivity matrix.
+    Assign random weights to the links of a given connectivity matrix.
 
 Generation of surrogates from given connectivity
 ------------------------------------------------
- GenRandomWeightedCon_Like
-    Generates a random connectivity matrix with same number of links and same
-    weight values as the input `con`, but randomly re-assigned.
-
+GenRandomWeightedCon_Like
+    Generate a surrogate weighted random network from a given connectivity matrix.
 ShuffleLinkWeights
-    Randomly re-allocates the weights of the links without changing the links.
+    Randomly re-allocate the link weights of a given weighted connectivity matrix.
 """
 
 # Standard library imports
@@ -195,7 +192,7 @@ def RndNonNormalNet(con):
 
 
 
-## NETWORK RANDOMIZATION FUNCTIONS (SURROGATE GENERATION) ######################
+## SURROGATE GENERATION FUNCTIONS (NETWORK RANDOMIZATION) ######################
 def GenRandomWeightedCon_Like(con, impose_directed=False, tol=1e-15):
     """
     Generates a random connectivity matrix with same number of links and same
