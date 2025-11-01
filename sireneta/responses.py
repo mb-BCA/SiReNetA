@@ -428,9 +428,7 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
 
     return resp_matrices
 
-def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
-                                                case='regressed', normed=False):
-    # TODO: Decide to keep or remove the 'normed' parameter.
+def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed'):
     """Computes the pair-wise responses over time for the leaky-cascade model.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
@@ -481,9 +479,6 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
         - 'regressed' Computes the network responses due to the presence of the
         links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
         'intrinsic' leakage.
-    normed : boolean (optional)
-        DEPRECATED. If True, normalises the tensor by a scaling factor, to make networks
-        of different size comparable.
 
     Returns
     -------
@@ -555,16 +550,9 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
-    # 2.2) Normalise by the scaling factor
-    if normed:
-        scaling_factor = np.abs(1./jacdiag).sum()
-        resp_matrices /= scaling_factor
-
     return resp_matrices
 
-def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
-                                                case='regressed', normed=False):
-    # TODO: Decide about the 'normed' parameter.
+def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed'):
     """Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
@@ -618,9 +606,6 @@ def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
         - 'regressed' Computes the network responses due to the presence of the
         links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
         'intrinsic' leakage.
-    normed : boolean (optional)
-        DEPRECATED. If True, normalises the tensor by a scaling factor, to make
-        networks of different size comparable.
 
     Returns
     -------
@@ -690,11 +675,6 @@ def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
             greendiag_t = np.diag( np.exp(jacdiag * t) )
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
-
-    # 2.2) Normalise by the scaling factor
-    if normed:
-        scaling_factor = np.abs(1./jacdiag).sum()
-        resp_matrices /= scaling_factor
 
     return resp_matrices
 
