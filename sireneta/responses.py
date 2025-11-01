@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+# Copyright 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 # Contact: gorka@zamora-lopez.xyz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,12 +75,14 @@ import scipy.linalg
 from . import io_helpers
 
 
-
 ## JACOBIAN MATRICES ###########################################################
+# TODO: Merge different jacobian generator functions into a single function !?
+
 def TransitionMatrix(con, rwcase='simple'):
+    # TODO: Add random walk with teleportation and other biased rw models.
     """Returns the transition probability matrix for random walks.
 
-    TODO: ADD RANDOM WALK WITH TELEPORTATION AND OTHER BIASED RW MODELS.
+    NOTE: For now only the simple random walk is supported
 
     - If rwcase='simple'
     Given a connectivity matrix A, where Aij represents the (weighted)
@@ -100,12 +102,6 @@ def TransitionMatrix(con, rwcase='simple'):
     -------
     tp_matrix : ndarray of rank-2 and shape (N,N).
         The transition probability matrix.
-
-    NOTE
-    ----
-    For now only the simple random walk is supported. Optional parameter
-    available to cover different classes of random walks in future
-    releases.
     """
     # 0) HANDLE AND CHECK THE INPUTS
     io_helpers.validate_con(con)
@@ -127,12 +123,24 @@ def TransitionMatrix(con, rwcase='simple'):
     return tpmat
 
 def Jacobian_LeakyCascade(con, tau):
+    # TODO: Rethink the name of this function.
     """Calculates the Jacobian matrix for the leaky-cascade dynamical system.
 
-    NOTE: This is the same as the Ornstein-Uhlenbeck process on a network.
+    This is the same as the Ornstein-Uhlenbeck process on a network,
+    also known as the continuous-time analogue of the linear autorregressive
+    model AR(1).
 
-    TODO: RETHINK THE NAME OF THIS FUNCTION. MERGE DIFFERENT JACOBIAN GENERATOR
-    FUNCTIONS INTO A SINGLE FUNCTION !?
+    Given a connectivity matrix A, where Aij represents the (weighted)
+    connection from j to i, the leaky-cascade is the time-continuous linear
+    propagation model represented by the following differential equation:
+
+            xdot(t) = - x(t) / tau + A x(t) ,
+
+    where tau is a leakage time-constant for a dissipation of the flows through
+    the nodes. Thus, its jaccobian matrix is J = -I / tau + A, where I is the
+    identity matrix such that
+
+            xdot(t) = (-I / tau + A) x(t) = J x(t).
 
     Parameters
     ----------
@@ -166,7 +174,17 @@ def Jacobian_LeakyCascade(con, tau):
 def LaplacianMatrix(con, normed=False):
     """Calculates the graph Laplacian.
 
-    TODO: WRITE THE DESCRIPTION HERE
+    Given a connectivity matrix A, where Aij represents the (weighted)
+    connection from j to i, the continuous diffusion is the simplest time-
+    continuous (and continuous variable) linear propagation model with diffusive
+    (or conservative) coupling. It is represented by the differential equation:
+
+            xdot(t) = -D x(t) + A x(t) ,
+
+    where D is a diagonal matrix containing the (output) degrees of the nodes
+    in the diagonal. Thus, the graph Laplacian matrix is L = -D + A such that
+
+            xdot(t) = (-D + A) x(t) = L X(t) .
 
     Parameters
     ----------
@@ -202,7 +220,7 @@ def LaplacianMatrix(con, normed=False):
 ## GENERATION OF THE MAIN TENSORS #############################################
 ## DISCRETE-TIME CANONICAL MODELS _____________________________________________
 
-# TODO: MAYBE, RETHING THE NAMING OF THESE FUNCTIONS ?
+# TODO: MAYBE, RETHINK THE NAMING OF THESE FUNCTIONS ?
 
 def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
     """Computes the pair-wise responses over time for the discrete cascade model.
@@ -332,10 +350,9 @@ def Resp_RandomWalk(con, S0=1, tmax=10):
 
 ## CONTINUOUS-TIME CANONICAL MODELS ____________________________________________
 def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
+    # TODO: Shall we allow 'S0' to be a matrix of (possibly correlated) gaussian
+    # white noise, as originally for the mou ?
     """Computes the pair-wise responses over time for the continuous cascade model.
-
-    TODO: SHALL WE ALLOW 'S0' TO BE A MATRIX OF (POSSIBLY CORRELATED) GAUSSIAN
-    WHITE NOISE, AS ORIGINALLY FOR THE MOU ?
 
     Given a connectivity matrix A, where Aij represents the (weighted)
     connection from j to i, the response matrices Rij(t) encode the temporal
@@ -377,7 +394,7 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
     Simulation runs from t=0 to t=tmax, in sampled `timestep` apart. Thus,
     simulation steps go from it=0 to it=nt, where `nt = int(tmax*timestep) + 1`
     is the total number of time samples (number of response matrices calculated).
-    Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`
+    Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`.
     """
     # 0) HANDLE AND CHECK THE INPUTS
     io_helpers.validate_con(con)
@@ -413,9 +430,8 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
 
 def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
                                                 case='regressed', normed=False):
+    # TODO: Decide to keep or remove the 'normed' parameter.
     """Computes the pair-wise responses over time for the leaky-cascade model.
-
-    TODO: DECIDE ABOUT THE 'normed' PARAMETER.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
     connection from j to i, the response matrices Rij(t) encode the temporal
@@ -548,9 +564,8 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
 
 def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
                                                 case='regressed', normed=False):
+    # TODO: Decide about the 'normed' parameter.
     """Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
-
-    TODO: DECIDE ABOUT THE 'normed' PARAMETER.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
     connection from j to i, the response matrices Rij(t) encode the temporal
@@ -604,8 +619,8 @@ def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
         links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
         'intrinsic' leakage.
     normed : boolean (optional)
-        DEPRECATED. If True, normalises the tensor by a scaling factor, to make networks
-        of different size comparable.
+        DEPRECATED. If True, normalises the tensor by a scaling factor, to make
+        networks of different size comparable.
 
     Returns
     -------
@@ -685,10 +700,9 @@ def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1,
 
 def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
                                                 case='regressed', normed=False):
+    # TODO: Shall we allow 's0' to be a matrix of (possibly correlated) gaussian
+    # white noise, as originally for the mou ?
     """Computes the pair-wise responses over time for the linear diffusive model.
-
-    TODO: SHALL WE ALLOW 'S0' TO BE A MATRIX OF (POSSIBLY CORRELATED) GAUSSIAN
-    WHITE NOISE, AS ORIGINALLY FOR THE MOU ?
 
     Given a connectivity matrix A, where Aij represents the (weighted)
     connection from j to i, the response matrices Rij(t) encode the temporal
