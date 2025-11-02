@@ -53,9 +53,7 @@ In any case, v2 has to be a clean and coherent library such that the transition 
 
 - ~~Add security checks at the beginning of all functions~~.
 
-- Finish test normalizations: (i) Eigenvalue, (ii) total weight, (iii) same inputs.
-
-- Make sure of docstrings are good (and homogeneous) in all modules.
+- ~~Make sure of docstrings are good (and homogeneous) in all modules~~.
 
 
 
