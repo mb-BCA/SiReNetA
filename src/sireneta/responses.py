@@ -551,132 +551,132 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regress
 
     return resp_matrices
 
-# def Resp_OrnsteinUhlenbeck(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed'):
-#     # TODO: Revise and verify this function. Input S0 or S0mat ?
-#     """Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
+def Resp_OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed'):
+    # TODO: Revise and verify this function. Input S0 or S0mat ?
+    """Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
 
-#     Given a connectivity matrix A, where Aij represents the (weighted)
-#     connection from j to i, the response matrices Rij(t) encode the temporal
-#     response observed at node i due to a short stimulus applied on node j at
-#     time t=0.
-#     The multivariate Ornstein-Uhlenbeck is the time-continuous and variable-
-#     continuous linear propagation model represented by the following
-#     differential equation:
+    Given a connectivity matrix A, where Aij represents the (weighted)
+    connection from j to i, the response matrices Rij(t) encode the temporal
+    response observed at node i due to a short stimulus applied on node j at
+    time t=0.
+    The multivariate Ornstein-Uhlenbeck is the time-continuous and variable-
+    continuous linear propagation model represented by the following
+    differential equation:
 
-#             xdot(t) = - x(t) / tau  +  A x(t)  +  D(t)
+            xdot(t) = - x(t) / tau  +  A x(t)  +  D(t)
 
-#     where tau is a leakage time-constant for a dissipation of the flows through
-#     the nodes and D(t) Gaussian noisy inputs to the nodes.
-#     Given λmax is the largest eigenvalue of the (positive definite) matrix A, then
-#     - if tau < tau_max = 1 / λmax, then the leakage term dominates in the long
-#     time and the solutions for all nodes converge to zero.
-#     - If tau = tau_max, all nodes converge to x_i(t) = 1.
-#     - And, if tau < tau_max, then time-courses xdot(t) grow exponentially fast.
+    where tau is a leakage time-constant for a dissipation of the flows through
+    the nodes and D(t) Gaussian noisy inputs to the nodes.
+    Given λmax is the largest eigenvalue of the (positive definite) matrix A, then
+    - if tau < tau_max = 1 / λmax, then the leakage term dominates in the long
+    time and the solutions for all nodes converge to zero.
+    - If tau = tau_max, all nodes converge to x_i(t) = 1.
+    - And, if tau < tau_max, then time-courses xdot(t) grow exponentially fast.
 
-#     Parameters
-#     ----------
-#     con : ndarray (2d) of shape (N,N).
-#         The connectivity matrix of the network.
-#     S0 : scalar or ndarray (1d) of length N or ndarray of shape (N,N), optional
-#         Variance of the Gaussian noise applied to the nodes.
-#         If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
-#         Default, `S0 = 1.0` represents a unit variance noise to all nodes.
-#         If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
-#         If a 2d-array is given, node i receives noise of variance `S0[i,i]` but
-#         nodes i,j receive correlated noise as input. Hence, `S0` must be a
-#         (noise) correlation matrix (symmetric matrix with all eigenvalues >= 0).
-#     tau : real value or ndarray (1d) of length N, optional
-#         The decay time-constants of the nodes. If a scalar value is entered,
-#         `tau = c`, then all nodes will be assigned the same value `tau[i] = 2`
-#         (identical nodes). If an 1d-array is entered, each node i is assigned
-#         decay time-constant `tau[i]`. Default `tau = 1.0` is probably too large
-#         for most real networks and will diverge. If so, enter a `tau` smaller
-#         than the spectral diameter (λ_max) of `con`.
-#     tmax : scalar, optional
-#         Duration of the simulation, arbitrary time units.
-#     timestep : scalar, optional
-#         Temporal step (resolution) between consecutive calculations of responses.
-#     case : string (optional)
-#         - 'full' Computes the responses a given by the Green's function of the
-#         Jacobian of the system: e^{Jt} with J = - I/tau + A.
-#         - 'intrinsic' Computes the trivial responses due to the leakage through
-#         the nodes: e^{J0t} with J0 = I/tau. This represents a 'null' case where
-#         the network is empty (has no links) and the initial inputs passively
-#         leak through the nodes without propagating.
-#         - 'regressed' Computes the network responses due to the presence of the
-#         links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
-#         'intrinsic' leakage.
+    Parameters
+    ----------
+    con : ndarray (2d) of shape (N,N).
+        The connectivity matrix of the network.
+    S0 : scalar or ndarray (1d) of length N or ndarray of shape (N,N), optional
+        Variance of the Gaussian noise applied to the nodes.
+        If scalar value given, `S0 = c`, all nodes are initialised as `S0[i] = c`
+        Default, `S0 = 1.0` represents a unit variance noise to all nodes.
+        If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
+        If a 2d-array is given, node i receives noise of variance `S0[i,i]` but
+        nodes i,j receive correlated noise as input. Hence, `S0` must be a
+        (noise) correlation matrix (symmetric matrix with all eigenvalues >= 0).
+    tau : real value or ndarray (1d) of length N, optional
+        The decay time-constants of the nodes. If a scalar value is entered,
+        `tau = c`, then all nodes will be assigned the same value `tau[i] = 2`
+        (identical nodes). If an 1d-array is entered, each node i is assigned
+        decay time-constant `tau[i]`. Default `tau = 1.0` is probably too large
+        for most real networks and will diverge. If so, enter a `tau` smaller
+        than the spectral diameter (λ_max) of `con`.
+    tmax : scalar, optional
+        Duration of the simulation, arbitrary time units.
+    timestep : scalar, optional
+        Temporal step (resolution) between consecutive calculations of responses.
+    case : string (optional)
+        - 'full' Computes the responses a given by the Green's function of the
+        Jacobian of the system: e^{Jt} with J = - I/tau + A.
+        - 'intrinsic' Computes the trivial responses due to the leakage through
+        the nodes: e^{J0t} with J0 = I/tau. This represents a 'null' case where
+        the network is empty (has no links) and the initial inputs passively
+        leak through the nodes without propagating.
+        - 'regressed' Computes the network responses due to the presence of the
+        links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
+        'intrinsic' leakage.
 
-#     Returns
-#     -------
-#     resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
-#         Temporal evolution of the pair-wise responses. The first time point
-#         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
-#         the response of node i at time t, due to an initial perturbation on j.
+    Returns
+    -------
+    resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
+        Temporal evolution of the pair-wise responses. The first time point
+        contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
+        the response of node i at time t, due to an initial perturbation on j.
 
-#     NOTE
-#     ----
-#     Simulation runs from t=0 to t=tmax, in sampled `timestep` apart. Thus,
-#     simulation steps go from it=0 to it=nt, where `nt = int(tmax*timestep) + 1`
-#     is the total number of time samples (number of response matrices calculated).
-#     Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`.
-#     """
-#     # 0) HANDLE AND CHECK THE INPUTS
-#     io_helpers.validate_con(con)
-#     N = len(con)
-#     S0mat = io_helpers.validate_S0matrix(S0,N)
-#     tau = io_helpers.validate_tau(tau, N)
+    NOTE
+    ----
+    Simulation runs from t=0 to t=tmax, in sampled `timestep` apart. Thus,
+    simulation steps go from it=0 to it=nt, where `nt = int(tmax*timestep) + 1`
+    is the total number of time samples (number of response matrices calculated).
+    Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`.
+    """
+    # 0) HANDLE AND CHECK THE INPUTS
+    io_helpers.validate_con(con)
+    N = len(con)
+    S0mat = io_helpers.validate_S0matrix(S0,N)
+    tau = io_helpers.validate_tau(tau, N)
 
-#     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
-#     if timestep <= 0.0: raise ValueError( "'timestep' must be positive")
-#     if timestep >= tmax: raise ValueError("'timestep' must be smaller than 'tmax'")
+    if tmax <= 0.0: raise ValueError("'tmax' must be positive")
+    if timestep <= 0.0: raise ValueError( "'timestep' must be positive")
+    if timestep >= tmax: raise ValueError("'timestep' must be smaller than 'tmax'")
 
-#     # Ensure all arrays are of same dtype (np.float64)
-#     if con.dtype != np.float64:     con = con.astype(np.float64)
-#     if S0mat.dtype != np.float64:   S0mat = S0mat.astype(np.float64)
-#     if tau.dtype != np.float64:     tau = tau.astype(np.float64)
+    # Ensure all arrays are of same dtype (np.float64)
+    if con.dtype != np.float64:     con = con.astype(np.float64)
+    if S0mat.dtype != np.float64:   S0mat = S0mat.astype(np.float64)
+    if tau.dtype != np.float64:     tau = tau.astype(np.float64)
 
-#     caselist = ['regressed', 'full', 'intrinsic']
-#     if case not in caselist:
-#         raise ValueError( "Please enter one of accepted cases: %s" %str(caselist) )
+    caselist = ['regressed', 'full', 'intrinsic']
+    if case not in caselist:
+        raise ValueError( "Please enter one of accepted cases: %s" %str(caselist) )
 
-#     # 1) PREPARE FOR THE CALCULATIONS
-#     # Initialise the output array and enter the initial conditions
-#     nt = int(tmax / timestep) + 1
-#     resp_matrices = np.zeros((nt,N,N), dtype=np.float64 )
-#     # Compute the Jacobian matrices
-#     jac = Jacobian_LeakyCascade(con, tau)
-#     jacdiag = np.diagonal(jac)
-#     # Normalise the noise correlation matrix
-#     S0mat = scipy.linalg.sqrtm(S0mat)
+    # 1) PREPARE FOR THE CALCULATIONS
+    # Initialise the output array and enter the initial conditions
+    nt = int(tmax / timestep) + 1
+    resp_matrices = np.zeros((nt,N,N), dtype=np.float64 )
+    # Compute the Jacobian matrices
+    jac = Jacobian_LeakyCascade(con, tau)
+    jacdiag = np.diagonal(jac)
+    # Normalise the noise correlation matrix
+    S0mat = scipy.linalg.sqrtm(S0mat)
 
-#     if case == 'full':
-#         for it in range(nt):
-#             t = it * timestep
-#             # Calculate the Green's function at time t
-#             green_t = scipy.linalg.expm(jac * t)
-#             # Calculate the pair-wise responses at time t
-#             resp_matrices[it] = np.matmul( green_t, S0mat )
+    if case == 'full':
+        for it in range(nt):
+            t = it * timestep
+            # Calculate the Green's function at time t
+            green_t = scipy.linalg.expm(jac * t)
+            # Calculate the pair-wise responses at time t
+            resp_matrices[it] = np.matmul( green_t, S0mat )
 
-#     elif case == 'intrinsic':
-#         for it in range(nt):
-#             t = it * timestep
-#             # Calculate the Green's function (of an empty graph) at time t
-#             greendiag_t = np.diag( np.exp(jacdiag * t) )
-#             # Calculate the pair-wise responses at time t
-#             resp_matrices[it] = np.matmul( greendiag_t, S0mat )
+    elif case == 'intrinsic':
+        for it in range(nt):
+            t = it * timestep
+            # Calculate the Green's function (of an empty graph) at time t
+            greendiag_t = np.diag( np.exp(jacdiag * t) )
+            # Calculate the pair-wise responses at time t
+            resp_matrices[it] = np.matmul( greendiag_t, S0mat )
 
-#     elif case == 'regressed':
-#         for it in range(nt):
-#             t = it * timestep
-#             # Calculate the Green's function (of the full system) at time t
-#             green_t = scipy.linalg.expm(jac * t)
-#             # Calculate the Green's function (of an empty graph) at time t
-#             greendiag_t = np.diag( np.exp(jacdiag * t) )
-#             # Calculate the pair-wise responses at time t
-#             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
+    elif case == 'regressed':
+        for it in range(nt):
+            t = it * timestep
+            # Calculate the Green's function (of the full system) at time t
+            green_t = scipy.linalg.expm(jac * t)
+            # Calculate the Green's function (of an empty graph) at time t
+            greendiag_t = np.diag( np.exp(jacdiag * t) )
+            # Calculate the pair-wise responses at time t
+            resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
-#     return resp_matrices
+    return resp_matrices
 
 def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
                                                 case='regressed', normed=False):
