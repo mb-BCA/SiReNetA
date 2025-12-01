@@ -45,9 +45,9 @@ cability and flow to analyze complex networks" Phys. Rev. E 97, 052301 (2018).
 Getting started and finding documentation
 -----------------------------------------
 
-..  Note:: Visit the repository https://github.com/mb-BCA/SiReNetA_Tutorials for
-    tutorials and practical examples of how to use *Response Network Analysis*
-    and the *SiReNetA* library.
+..  Please visit the repository https://github.com/mb-BCA/SiReNetA_Tutorials for
+    an introduction and practical examples of how to use *Stimulus-Response
+    Network Analysis* and the *SiReNetA* library.
 
 The library is organised into the following user modules:
 
