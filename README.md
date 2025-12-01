@@ -1,3 +1,8 @@
+[![pypi version](https://img.shields.io/pypi/v/sireneta?logo=pypi)](https://pypi.org/project/sireneta/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/sireneta.svg?label=PyPI%20downloads)](
+https://pypi.org/project/sireneta/)
+[![Apache-2.0 License](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](http://choosealicense.com/licenses/Apache-2.0/)
+
 # SiReNetA
 
 > NOTE! Current version is an "*alpha - development*" for testing and validation. Heavy changes expected until release of version 1.0. Stay tuned or follow ‪@gzamora-lopez.bsky.social‬ in Bluesky for updates.
@@ -107,6 +112,16 @@ limitations under the License.
 
 -------------------------------------------------------------------------------
 ### VERSION HISTORY
+
+##### December XX, 2025 (Release of Version 1.0)
+
+TO BE REVISED BEFORE v1 RELEASE.
+Stable version 1.0 checked, validated and released.
+
+* The library has been reshaped to be compliant with the modern [PyPA specifications](https://packaging.python.org/en/latest/specifications/).
+* [Hatch](https://hatch.pypa.io/latest/) was chosen as the tool to build and publish the package. See the *pyproject.toml* file. 
+* Bug fixes to adapt to the various changes in Python and NumPy since last release.
+* _Sample and validation scripts in the "*Examples/*" folder revised and adapted to recent changes in Python and NumPy._ 
 
 ##### March 14, 2024
 
