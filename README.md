@@ -11,7 +11,7 @@ https://pypi.org/project/sireneta/)
 
 
 
-**Sitmulus-Response Network Analysis (SiReNetA)** : A library for the study of complex networks in the light of canonical propagation models.
+_**Stimulus-Response Network Analysis (SiReNetA)** : A library for the study of complex networks in the light of canonical propagation models._
 
 Graph theory constitutes a widely used and established field providing powerful tools for the characterisation of complex networks. However, the diversity of complex networks studied nowadays overcomes the capabilities of graph theory (originally developed for binary adjacency matrices) to understand networks and their function. In the recent years plenty of alternative metrics have been proposed which are–one way or another–based on dynamical phenomena happening on networks.
 
@@ -33,67 +33,87 @@ dynamics: A new framework based on dynamic communicability](https://doi.org/10.1
 &nbsp;
 ### INSTALLATION
 
-Installation of *SiReNetA* is simple. The only requirements are an existing python distribution and the [pip](https://github.com/pypa/pip) package manager. If Python was installed via the [Anaconda](https://www.anaconda.com) or another Python distribution, then 'pip' is surely installed. To check, open a terminal and type:
+Installation of SiReNetA is simple, only the [pip](https://github.com/pypa/pip) package manager is needed. To check whether `pip` is installed, open a terminal and type:
 
-	$ pip --help
+	pip --help
 
-*SiReNetA* is still not registered in PyPI (the Python Package Index) and installation follows directly from GitHub. However, pip will automatically take care of the  dependencies (see the *requirements.txt* file). There are two alternative manners to install.
+> **NOTE**: If you use Anaconda (or any other third-party package manager), we recommend to install the dependencies (python>=3.6, numpy>=1.6, scipy and numba) into the target environment using Anaconda before installing SiReNetA. Otherwise, `pip` will download and install those packages directly from PyPI as well, and you won't be able to manage them through Acanconda.
 
-**A) Direct installation from GitHub**: Open a terminal and enter:
+#### Installing from PyPI 
 
-	$ pip install git+https://github.com/mb-BCA/SiReNetA.git@master
+SiReNetA is registered in the official *Python Package Index*, [PyPI](https://pypi.org/project/sireneta/) . To install, open a terminal window and type:
 
-This will install the folder "*sireneta/*" of this repository into the "*…/site-packages/*" folder of your current python environment. To confirm the installation open an interactive session and try to import the library by typing `import sireneta`.
+	python3 -m pip install sireneta
 
-The installation command can also be run from a cell in a **Jupyter notebook**. In that case, begin the cell with "%", what allows to run terminal commands. Type the following in a cell of the notebook :
+To confirm the installation, open an interactive session (e.g., IPython or a Notebook) and try to import the library by typing `import sireneta`.
 
-	%pip install git+https://github.com/mb-BCA/SiReNetA.git@master
+#### Direct installation from GitHub 
 
-**B) Download and install**: Visit the GitHub repository [https://github.com/mb-BCA/SiReNetA/](https://github.com/mb-BCA/SiReNetA/) and click on the "<> Code" button at the right hand side (the green button). Select "Download ZIP". Download to a preferred path, e.g.' "~/Downloads/" and unzip the file. Open a terminal and move to that folder, e.g.,
+If you have [git](https://git-scm.com) installed, you may like to install SiReNetA directly from its GitHub repository. Open a terminal and type:
 
-	$ cd ~/Downloads/sireneta-master/
+	python3 -m pip install git+https://github.com/gorkazl/SiReNetA.git@master
 
-Make sure this folder is the one containing the *setup.py* file. Then, type:
+This will only download and install the package (files in "*src/sireneta/*") into your current environment. Useful for development and testing purposes, you can choose to install the version in another branch by replacing the '*@master*' at the end of the command by '*@branchname*' of the desired branch.
 
-	$ pip install .
+#### Installing SiReNetA in editable mode
 
-Do not forget the "." at the end which means "*install from this directory using the code in setup.py*." This will check for the dependencies and install *SiReNetA*. To confirm the installation open an interactive session and try to import the library by typing `import sireneta`. After installation the folder "*~/Downloads/sireneta-master/*" can be safely deleted.
+If you want to install SiReNetA such that you can make changes to it "*on the fly*" then, visit its GitHub repository [https://github.com/gorkazl/SiReNetA/](https://github.com/gorkazl/SiReNetA/), select a branch and then click on the green "*<> Code*" button on the top right and select "Download ZIP" from the pop-up menu. Once downloaded, move the *zip* file to a target folder (e.g., "*~/Documents/myLibraries/*") and unzip the file. Open a terminal and `cd` to the resulting folder, e.g.,
+
+	cd ~/Documents/myLibraries/SiReNetA-master/
+
+Once on the path (make sure it contains the *pyproject.toml* file), type:
+
+	python3 -m pip install -e .
+
+Do not forget the "." at the end which means "*look for the pyproject.toml file in the current directory*." This will install SiReNetA such that every time changes are made to the package (located in the path chosen), these will be inmediately available. You may need to restart the IPython or Jupyter notebook session, though.
+
 
 
 
 &nbsp;
-### ORGANISATION AND DOCUMENTATION
+### HOW TO USE SiReNetA
 
-The library is organised into the following user modules:
+> Please visit the SiReNetA repository of tutorials [https://github.com/mb-BCA/SiReNetA_Tutorials](https://github.com/mb-BCA/SiReNetA_Tutorials) for documentation and examples to get started with the use of *Response Network Analysis* and the *SiReNetA* library.
+
+The package is organised into the following user modules:
 
 - *__responses.py__* : Functions to calculate the spatio-temporal evolution of pair-wise node responses $R_{ij}(t)$ to initial unit stimuli, under different canonical models.
 - *__metrics.py__* : Descriptors to characterise the networks out of the $R_{ij}(t)$ spatio-temporal responses.
-- *__simulate.py__* : Functions to run simulations of the different canonical models on networks.
+- ~~*__simulate.py__* : Functions to run simulations of the different canonical models on networks.~~
 - *__tools.py__* : Miscellaneous functionalities.
 
-The documentation of the library can be accessed 'online' typing  `help(module_name)` in a Python interactive session, or typing `module_name?` in IPython or a Jupyter notebook. For example, to see the principal description of *SiReNetA*, type :
+
+#### FINDING FURTHER DOCUMENTATION
+
+While working in an interactive session, after importing a module, the built-in `help()` function will show further details. Import sireneta
 
 	>>> import sireneta as sna
+	>>> help(sna)
+
+The command `help(sna)` will show the general summary of the package and a list of all the modules in the library. To display information of the individual modules, say, their individual description and the list of functions available, call their documentation as:
+
+	>>> help(sna.responses)
+	>>> help(sna.metrics)
+
+For further details regarding each function, access their description and the list of parameters as :
+
+	>>> help(sna.modulename.functionname)
+
+For IPython and Jupyter notebook users, the `help` command is replaced by a question mark after the module's or function's name. For example:
+
 	>>> sna?
-
-To see the list of functions available in each of the modules, call their documentation as :
-
 	>>> sna.responses?
-	>>> sna.metrics?
-	>>> sna.simulate?
-	>>> sna.tools?
-
-Details of each function can also be seen using the usual help,
-
-	>>> sna.module_name.func_name?
+	>>> sna.metrics.functionname?
 
 >**NOTE:** Importing *SiReNetA* brings all functions in the modules *responses.py* and *metrics.py* into the local namespace. Therefore, these functions can be called as `sna.func()` instead of `sna.responses.func()` or `sna.metrics.func()`.
+
+For questions, bug reports, etc, please write to <gorka@Zamora-Lopez.xyz>, or open an issue in GitHub.
 
 
 &nbsp;
 ### LICENSE
 
-Copyright (c) 2024 – 2025, Gorka Zamora-López and Matthieu Gilson. Contact: <gorka@Zamora-Lopez.xyz>
+Copyright (c) 2024, Gorka Zamora-López and Matthieu Gilson.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this software except in compliance with the License.

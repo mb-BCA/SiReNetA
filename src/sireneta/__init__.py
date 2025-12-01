@@ -14,8 +14,8 @@
 # limitations under the License.
 
 """
-Response Network Analysis (SiReNetA)
-====================================
+Stimulus-Response Network Analysis (SiReNetA)
+==============================================
 
 A library to study complex networks in the light of canonical propagation models.
 
@@ -57,17 +57,12 @@ responses.py
 metrics.py
     Descriptors to characterise the spatio-temporal evolution of perturbation-induced
     responses in a network.
-simulate.py
-    Functions to run simulations of the different canonical models on networks.
-netmodels.py
-    Functions to generate and randomise (weighted) networks of interest for
-    benchmarking.
 tools.py
     Miscellaneous functionalities.
 
 The documentation of the library can be accessed 'online' typing
-`help(module.py)` in a Python interactive session, or typing `modulename?`
-in IPython or a Jupyter notebook. For example, to see the principal description
+`help(modulename)` in a Python interactive session, or typing `modulename?`
+in IPython session or a Jupyter notebook. To see the principal description
 of *SiReNetA*, type: ::
 
   >>> import sireneta as sna
@@ -79,7 +74,6 @@ documentation as ::
 
   >>> sna.responses?
   >>> sna.metrics?
-  >>> sna.simulate?
   >>> sna.tools?
 
 Details of each function can also be seen using the usual help, ::
