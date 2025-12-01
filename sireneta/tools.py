@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+# Copyright 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 # Contact: gorka@zamora-lopez.xyz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,6 @@ NNt2tNN
     Transposes a 3D array from shape (N,N,nt) to (nt,N,N) shape.
 tNN2NNt
     Transposes a 3D array from shape (nt,N,N) to (N,N,nt) shape.
-Reciprocity
-    Computes the fraction of reciprocal links in a graph.
-
 """
 # Standard library imports
 
@@ -52,8 +49,8 @@ def NNt2tNN(tensor):
     Returns
     -------
     newtensor : ndarray of rank-3.
-        Same as input 'tensor' but in shape (nt,N,N). Matrix rows an columns at
-        each slice in 'tensor' are conserved row and columns in 'newtensor'.
+        Same as input `tensor` but in shape (nt,N,N). Matrix rows an columns at
+        each slice in `tensor` are conserved row and columns in `newtensor`.
 
     Notes
     -----
@@ -62,7 +59,6 @@ def NNt2tNN(tensor):
     call the function as follows:
 
     >>> arr2 = np.copy( NNt2tNN(arr1), order='C' )
-
     """
     # Security checks
     assert len(np.shape(tensor)) == 3, "3D array required."
@@ -89,8 +85,8 @@ def tNN2NNt(tensor):
     Returns
     -------
     newtensor : ndarray of rank-3.
-        Same as input 'tensor' but in shape (N,N,nt). Matrix rows an columns at
-        each slice in 'tensor' are conserved row and columns in 'newtensor'.
+        Same as input `tensor` but in shape (N,N,nt). Matrix rows an columns at
+        each slice in `tensor` are conserved row and columns in `newtensor`.
 
     Notes
     -----
@@ -110,36 +106,6 @@ def tNN2NNt(tensor):
     newtensor = np.transpose(tensor, axes=(1,2,0))
     return newtensor
 
-# def Reciprocity(con):
-#     """Computes the fraction of reciprocal links to total number of links.
-#
-#     Both weighted and unweighted input matrices are permitted. Weights
-#     are ignored for the calculation.
-#     Parameters
-#     ----------
-#     con : ndarray (2d) of shape (N,N).
-#         The connectivity matrix of the network.
-#     Returns
-#     -------
-#     reciprocity : float
-#         A scalar value between 0 (for acyclic directed networks) and 1 (for
-#         fully reciprocal).
-#     """
-#     # 0) PREPARE FOR COMPUTATIONS
-#     adjmatrix = adjmatrix.astype('bool')
-#
-#     # 1) COMPUTE THE RECIPROCITY
-#     L = adjmatrix.sum()
-#     if L == 0:
-#         reciprocity = 0
-#     else:
-#         # Find the assymmetric links
-#         # Rest = np.abs(adjmatrix - adjmatrix.T)
-#         Rest = np.abs(adjmatrix ^ adjmatrix.T)
-#         Lsingle = 0.5*Rest.sum()
-#         reciprocity = np.float(L-Lsingle) / L
-#
-#     return reciprocity
 
 
 

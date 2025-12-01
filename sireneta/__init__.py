@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+# Copyright 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 # Contact: gorka@zamora-lopez.xyz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 
 """
 Response Network Analysis (SiReNetA)
-==================================
+====================================
 
 A library to study complex networks in the light of canonical propagation models.
 
@@ -33,9 +33,7 @@ approach to network analysis, it consists on four fundamental steps:
 **Reference and Citation**
 
 G. Zamora-Lopez and M. Gilson "An integrative dynamical perspective for graph
-theory and the analysis of complex networks" arXiv:2307.02449 (2023).
-DOI: `https://doi.org/10.48550/arXiv.2307.02449
-<https://doi.org/10.48550/arXiv.2307.02449>`_
+theory and the analysis of complex networks" Chaos 34, 041501 (2024).
 
 M. Gilson, N. Kouvaris, et al. "Network analysis of whole-brain fMRI
 dynamics: A new framework based on dynamic communicability" NeuroImage 201,
@@ -56,12 +54,15 @@ The library is organised into the following user modules:
 
 responses.py
     Functions to calculate the spatio-temporal evolution of pair-wise node
-    responses for different canonical models.
+    responses, using different canonical propagation models.
 metrics.py
     Descriptors to characterise the spatio-temporal evolution of perturbation-induced
     responses in a network.
 simulate.py
     Functions to run simulations of the different canonical models on networks.
+netmodels.py
+    Functions to generate and randomise (weighted) networks of interest for
+    benchmarking.
 tools.py
     Miscellaneous functionalities.
 
@@ -93,7 +94,7 @@ Details of each function can also be seen using the usual help, ::
 
 License
 -------
-Copyright 2024, Gorka Zamora-López and Matthieu Gilson.
+Copyright (c) 2024 - 2025, Gorka Zamora-López and Matthieu Gilson.
 Contact: gorka@zamora-lopez.xyz
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -114,17 +115,18 @@ from .responses import *
 from . import metrics
 from .metrics import *
 from . import simulate
+from .simulate import *
+from . import netmodels
 from . import tools
-# from . import netmodels
 # from . import metrics_test
 
 
 __author__ = "Gorka Zamora-Lopez and Matthieu Gilson"
 __email__ = "gorka@Zamora-Lopez.xyz"
-__copyright__ = "Copyright 2024"
+__copyright__ = "Copyright 2024 - 2025"
 __license__ = "Apache License version 2.0"
-__version__ = "0.1.dev2"
-__update__ = "14/03/2024"
+__version__ = "1.0.0.dev2"
+__update__ = "02/11/2025"
 
 
 

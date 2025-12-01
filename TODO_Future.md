@@ -1,30 +1,56 @@
-# Roadmap towards an object-based version of ReNetA 
+# Roadmap towards an object-based version of *SiReNetA* 
 
-I think that version 3 of ReNetA should be an object oriented library because we want to be able to compute the response matrices for different canonical models. The user should be able to call just one function to generate the response matrices, and one type of object to store that information, from which the user should be able to compute further metrics. Therefore, the library should be based around a core object (class) for the tensor containing the response matrices, *ResponseMatrices*. This object should have the following attributes and methods.
+Version 2 of ReNetA should be an object oriented library because we want to be able to compute the response matrices for different canonical models. The user should be able to call just one function to generate the response matrices, and one type of object to store that information, from which the user should be able to compute further metrics. Therefore, the library should be based around a core object (class) for the tensor containing the response matrices, *ResponseMatrices*. This object should have the following attributes and methods.
+
+### General TODO
+
+- Write pseudocode of how we would like a typeical workflow for the Object-Oriented version. See [v2_PseudoCode.ipynb](v2_PseudoCode.ipynb). 
+- Identify attributes that should be locked from further changes. E.g., each object is bound, at creation time, to one canonical model. User cannot change the canonical model of the object later on. User would need to create another object for the same network and a different propagation model.
 
 ### Which attributes should the *ResponseMatrices* object have
 
 General attributes:
 
-- The canonical propagation model, e.g. `canonicalmodel`
-- Indicator for time discrete or continuous, e.g. `timetype`
-- The connectivity matrix `con`
-- Number of nodes, N.
+- `canmod` : The canonical propagation model. **Unmutable**.
+- `timetype` : Indicator for time discrete or time continuous. **Unmutable**, fixed by `canmod`.
+- `con` : The connectivity matrix. **Unmutable**.
+- `N` : The number of nodes. Extracted from `con`, not user input.
+- `directed` : Whether `con` is directed or not. Extracted from `con`, not user input.
+- `labels` : The "names" of the *N* nodes, if any given by the user. Optional attribute, not needed for calculations.
 - Temporal constraints of the simulation [`t0`, `tfinal`, `dt`]
-- Array of time-points in the simulation time-scale: `tpoints`.
-- Initial conditions `X0`
-- The simulated tensor of shape (N, N, nt) with the flow.
+- `tpoints` : ndarray of the time-points in the simulation. Calculated from `tfinal` and `dt`, not user input.
+- `S0` : The initial amplitude of stimulus at every node.
+- `data` : The "simulated" response tensor of response matrices. Shape = (tmax//dt+1, N, N). Alternatively, it could be named `arr_tij`. Then, the internal arrays for node-wise responses would be `arr_ti` and for global response `arr_t`.
 - Eigenvalues and eigenvectors of the connectivity matrix. (?? Not sure of this one.)
-
-
-Attributes only for specific canonical models:
-
-- The leakage rate used for the simulation, $\tau$.
-- The Sigma matrix (i.e., the matrix of the initial inputs), which is equal to input time (e.g. InstantaneousInput so far, StationaryInput for MOU). (((We need a check that Sigma is properly normalised. )))
-- The "personalization vector" for the random walkers with teleportation.
+- `evmax` : Largest eigenvalue of `con`. Maybe not needed?
 
 
 
+Model specific attributes (DISCRETE CASCADE):
+
+- `timestep` = 1, by default. **_Not mutable_**.
+
+
+Model specific attributes (RANDOM WALK):
+
+- `timestep` = 1, by default. **_Not mutable_**.
+
+
+Model specific attributes (LEAKY CASCADE):
+
+- `taumax` : largest possible leakage rate  where $\tau\_{max} = 1 / \lambda_{max}$.
+- The leakage rate used for the "simulation", $\tau$.
+- Stimulus `S0` can be a matrix, the Sigma matrix used for the MOU. (((We need a check that Sigma is properly normalised. )))
+
+
+Model specific attributes (RANDOM WALK WITH TELEPORTATION)
+
+- Has not been implemented yet into *SiReNetA*.
+- `v` : The personalization vector.
+
+
+
+<br>
 
 ### Which methods should the *ResponseMatrices* object have
 
