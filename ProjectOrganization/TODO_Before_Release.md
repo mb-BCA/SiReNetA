@@ -5,26 +5,26 @@ In order to properly finalise v1, ask Nacho:
 - How to deal with inputs to functions. Check every input parameter?
 - How to deal with the updates of the Copyright statement !?
 - What to do with the *tools.py* module ?
-- Reminder of how to build Python packages and upload them to PyPI, following the "new" rules.
+- ~~Reminder of how to build Python packages and upload them to PyPI, following the "new" rules.~~
 
 
 #### Before merging new version into master:
 
-
-- Open a new branch out of master --> '**v1-legacy**' where I will keep the test files and modules that won't make to the v1 release.
+- ~~Reshape repository and prepare everything for SiReNetA to be compatible with the new Python Packaging rules~~. **Reshaped and prepared to use "Hatch"**.
+- Move all functions from **netmodels.py** to pyGAlib and from **simulate.py** to a new *light* simulation package.
 - Clean *\_\_init\_\_.py*: 
 	- Remove imports to test modules, and to irrelevant modules. 
 	- Double check list of absolute imports.
 	- Update general description. Explanation for the canonical models.
 	- Double check the instructions in the initial docstring. New names of functions. Make sure the examples work if copy/pasted.
 	- Update the publication list, include the latest dynflow paper.
-- Update the Copyright dates in all files.
-- Update the version number to 1.0 in *\_\_init\_\_.py* and *setup.py*.
+- ~~Update the Copyright dates in all files.~~
+- Update the version number to 1.0 in *\_\_init\_\_.py*.
 - Remove unnecessary files (to-do lists, NamingConventions, etc.)
 - Update the **README.md** file.
 	- Remove initial unnecessary text. 
-	- Update general description(s), include explanation for the different canonical models.
-	- Update the Copyright / license infos.
+	- ~~Update general description(s), include explanation for the different canonical models.~~ **No, that is why we created the tutorial repository.**
+	- ~~Update the Copyright / license infos.~~
 	- Double check the instructions in the initial docstring. New names of functions. Make sure the examples work if copy / pasted.
 	- Update list of changes.
 
@@ -41,6 +41,6 @@ In order to properly finalise v1, ask Nacho:
 #### Make the repository public
 
 - Create a GitHub release for v1.
-- Upload SiReNetA to PYPI.
+- Upload SiReNetA to PyPI.
 
 
