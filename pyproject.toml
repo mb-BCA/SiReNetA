@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sireneta"
+dynamic = ["version"]
+description = "A library to study complex networks in the light of canonical propagation models."
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+    { name = "Gorka Zamora-López", email = "gorka@zamora-lopez.xyz" },
+    { name = "Matthieu Gilson", email = "matthieu.gilson@univ-amu.fr" },
+]
+
+keywords = [
+    "graph theory",
+    "complex networks",
+    "network analysis",
+    "weighted networks",
+    "model-based data analysis"
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "numpy",
+    "scipy",
+]
+
+[project.urls]
+Homepage = "https://github.com/mb-BCA/SiReNetA"
+"Source Code" = "https://github.com/mb-BCA/sireneta/tree/master/src/sireneta"
+"Bug Tracker" = "https://github.com/mb-BCA/sireneta/issues"
+Documentation = "https://github.com/mb-BCA/sireneta/blob/master/README.md"
+Tutorials = "https://github.com/mb-BCA/SiReNetA_Tutorials"
+
+
+[tool.hatch.version]
+path = "src/sireneta/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/sireneta",
+]
