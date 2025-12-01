@@ -2,6 +2,7 @@
 
 from setuptools import setup, find_packages
 
+
 with open("requirements.txt") as reqs_file:
     REQS = [line.rstrip() for line in reqs_file.readlines() if line[0] not in ['\n', '-', '#']]
 
