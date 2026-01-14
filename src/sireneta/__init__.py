@@ -107,7 +107,6 @@ from .responses import *
 from . import metrics
 from .metrics import *
 from . import simulate
-from .simulate import *
 from . import netmodels
 from . import tools
 # from . import metrics_test
