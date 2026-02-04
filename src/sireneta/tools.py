@@ -60,7 +60,7 @@ def NNt2tNN(tensor):
     >>> arr2 = np.copy( NNt2tNN(arr1), order='C' )
     """
     # Security checks
-    assert len(np.shape(tensor)) == 3, "3D array required."
+    assert tensor.ndim == 3, "3D array required."
     n0, n1, n2 = np.shape(tensor)
     if n0 != n1:
         raise TypeError("3D array of shape (N,N,nt) required.")
@@ -97,7 +97,7 @@ def tNN2NNt(tensor):
 
     """
     # Security checks
-    assert len(np.shape(tensor)) == 3, "3D array required."
+    assert tensor.ndim == 3, "3D array required."
     n0, n1, n2 = np.shape(tensor)
     if n1 != n2:
         raise TypeError("3D array of shape (nt,N,N) required.")

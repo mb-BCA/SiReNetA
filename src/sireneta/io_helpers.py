@@ -75,7 +75,8 @@ def validate_tensor(a):
 
     # Make sure 'tensor' is a 3D array of suitable shape
     tenshape = np.shape(a)
-    if (len(tenshape) != 3) or (tenshape[1] != tenshape[2]):
+    # if (len(tenshape) != 3) or (tenshape[1] != tenshape[2]):
+    if (a.ndim != 3) or (tenshape[1] != tenshape[2]):
         raise ValueError("Input array not aligned. A 3D array of shape (nt,N,N) expected.")
 
 def validate_X0(a, N):
