@@ -24,7 +24,6 @@ module for 'official' release into the package.
 
 # Third party packages
 import numpy as np
-from numba import jit
 
 
 ## METRICS EXTRACTED FROM THE RESPONSE TENSORS #################################
