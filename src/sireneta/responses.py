@@ -103,7 +103,7 @@ def TransitionMatrix(con, rwcase='simple'):
         The transition probability matrix.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     if con.dtype != np.float64:
         con = con.astype(np.float64)
     N = len(con)
@@ -157,9 +157,9 @@ def Jacobian_LeakyCascade(con, tau):
         The Jacobian matrix for the MOU dynamical system.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     N = len(con)
-    tau = io_helpers.validate_tau(tau, N)
+    tau = _io_helpers.validate_tau(tau, N)
 
     # Ensure all arrays are of same dtype (np.float64)
     if con.dtype != np.float64:    con = con.astype(np.float64)
@@ -198,7 +198,7 @@ def LaplacianMatrix(con, normed=False):
         The graph Laplacian matrix.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     if con.dtype != np.float64:
         con = con.astype(np.float64)
     N = len(con)
@@ -260,9 +260,9 @@ def DiscreteCascade(con, S0=1.0, tmax=10, labels=None):
         the response of node i at time t, due to an initial perturbation on j.
      """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     N = len(con)
-    S0 = io_helpers.validate_S0(S0,N)
+    S0 = _io_helpers.validate_S0(S0,N)
 
     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
 
@@ -279,7 +279,6 @@ def DiscreteCascade(con, S0=1.0, tmax=10, labels=None):
 
     # 2) COMPUTE THE PAIR-WISE RESPONSE MATRICES OVER TIME
     for t in range(1,nt):
-        # resp_matrices[t] = np.matmul(resp_matrices[t-1], con)
         resp_matrices[t] = np.matmul(con, resp_matrices[t-1])
 
     # 3) CONVERT INTO AN xarray OBJECT
@@ -337,9 +336,9 @@ def RandomWalk(con, S0=1, tmax=10, labels=None):
         the response of node i at time t, due to an initial perturbation on j.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     N = len(con)
-    S0 = io_helpers.validate_S0(S0,N)
+    S0 = _io_helpers.validate_S0(S0,N)
 
     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
 
@@ -428,9 +427,9 @@ def ContCascade(con, S0=1.0, tmax=10, timestep=0.1, labels=None):
     Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     N = len(con)
-    S0 = io_helpers.validate_S0(S0,N)
+    S0 = _io_helpers.validate_S0(S0,N)
 
     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
     if timestep <= 0.0: raise ValueError( "'timestep' must be positive")
@@ -541,10 +540,10 @@ def LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed', 
     Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     N = len(con)
-    S0 = io_helpers.validate_S0(S0,N)
-    tau = io_helpers.validate_tau(tau, N)
+    S0 = _io_helpers.validate_S0(S0,N)
+    tau = _io_helpers.validate_tau(tau, N)
 
     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
     if timestep <= 0.0: raise ValueError( "'timestep' must be positive")
@@ -685,10 +684,10 @@ def OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regr
     Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     N = len(con)
-    S0mat = io_helpers.validate_S0matrix(S0,N)
-    tau = io_helpers.validate_tau(tau, N)
+    S0mat = _io_helpers.validate_S0matrix(S0,N)
+    tau = _io_helpers.validate_tau(tau, N)
 
     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
     if timestep <= 0.0: raise ValueError( "'timestep' must be positive")
@@ -822,9 +821,9 @@ def ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
     Get the sampled time points as `tpoints = np.arange(0,tmax+timestep,timestep)`.
     """
     # 0) HANDLE AND CHECK THE INPUTS
-    io_helpers.validate_con(con)
+    _io_helpers.validate_con(con)
     N = len(con)
-    S0 = io_helpers.validate_S0(S0,N)
+    S0 = _io_helpers.validate_S0(S0,N)
 
     if tmax <= 0.0: raise ValueError("'tmax' must be positive")
     if timestep <= 0.0: raise ValueError( "'timestep' must be positive")
