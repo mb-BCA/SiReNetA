@@ -31,10 +31,10 @@ NodeResponses
     Temporal evolution of the input and output responses for each node.
 SelfResponses
     Temporal evolution of the responses of nodes due to stimulus on themselves.
-AreaUnderCurve
-    Total amount of response accumulated over time.
 TimeToPeak
     The time that links, nodes or the network need to reach maximal response.
+AreaUnderCurve
+    Total amount of response accumulated over time.
 
 
 **Reference and Citation**
@@ -53,12 +53,15 @@ cability and flow to analyze complex networks" Phys. Rev. E 97, 052301 (2018).
 # Standard library imports
 # Third party packages
 import numpy as np
+import xarray as xr
 # Local imports from sireneta
 from . import _io_helpers
 
 
-# TODO: MAKE SURE FUNCTIONS RUN AFTER INTRODUCTION OF validate_tensor() CHECKS
-# TODO: REVISE AND ADAPT ALL THE DOCSTRING DESCRIPTIONS
+# TODO: REVISE AND ADAPT ALL THE DOCSTRING DESCRIPTIONS !!
+# TODO: Write a new _io_helpers.validate_tensor() function, now that input tensor
+# is a xarray.DataArray object. Although, precisely because of this I expect less
+# user errors, since they can input just anything.
 
 ## METRICS EXTRACTED FROM THE PAIR-WISE RESPONSE TENSORS #######################
 def GlobalResponse(tensor, selfresp=True):
@@ -67,7 +70,7 @@ def GlobalResponse(tensor, selfresp=True):
 
     Parameters
     ----------
-    tensor : ndarray (3d) of shape (nt,N,N)
+    tensor : xarray.DataArray of dimension 3 and shape (nt,N,N)
         Temporal evolution of the pair-wise responses, as calculated by one of
         the functions of module *responses.py*.
     selfresp : boolean
@@ -81,20 +84,20 @@ def GlobalResponse(tensor, selfresp=True):
 
     Returns
     -------
-    global_response : ndarray (1d) of length nt
+    global_response : xarray.DataArray of dimension 1 and length nt
         The total networks response over time, summed over all pair-wise
         responses at each time-point.
     """
     # 0) CHECK THE USER INPUT
-    io_helpers.validate_tensor(tensor)
+    # _io_helpers.validate_tensor(tensor)
 
     # 1) Compute the global network responses over time (nt)
     global_response = tensor.sum(axis=(1,2))
 
     if not selfresp:
-        nt = len(tensor)
+        nt = global_response.sizes['time']
         for t in range(nt):
-            global_response[t] -= tensor[t].trace()
+            global_response[t] -= tensor.values[t].trace()
 
     return global_response
 
@@ -104,27 +107,20 @@ def Diversity(tensor):
 
     Parameters
     ----------
-    tensor : ndarray (3d) of shape (nt,N,N)
+    tensor : xarray.DataArray of dimension 3 and shape (nt,N,N)
         Temporal evolution of the pair-wise responses, as calculated by one of
         the functions of module *responses.py*.
 
     Returns
     -------
-    diversity : ndarray (1d) of length nt.
+    diversity : xarray.DataArray of dimension 1 and length nt
         The diversity (coefficient of variation) of the pattern of network
         responses at each time-point.
-
     """
     # 0) CHECK THE USER INPUT
-    io_helpers.validate_tensor(tensor)
+    # _io_helpers.validate_tensor(tensor)
 
-    # 1) Do the calculations
-    nt = tensor.shape[0]
-    diversity = np.zeros(nt, np.float64)
-    diversity[0] = np.nan
-    for i_t in range(1,nt):
-        temp = tensor[i_t]
-        diversity[i_t] = temp.std() / temp.mean()
+    diversity = tensor.std(axis=(1,2)) / tensor.mean(axis=(1,2))
 
     return diversity
 
@@ -134,7 +130,7 @@ def NodeResponses(tensor, selfresp=True):
 
     Parameters
     ----------
-    tensor : ndarray (3d) of shape (nt,N,N)
+    tensor : xarray.DataArray of dimension 3 and shape (nt,N,N)
         Temporal evolution of the pair-wise responses, as calculated by one of
         the functions of module *responses.py*.
     selfresp : boolean
@@ -148,7 +144,7 @@ def NodeResponses(tensor, selfresp=True):
 
     Returns
     -------
-    node_resps : tuple contaning two ndarrays (2d) of shape (nt,N).
+    node_resps : tuple contaning two xarray.DataArrays of shape (nt,N).
         The temporal evolution of the input and output responses for all nodes.
         `node_resps[0]` is the input responses into the nodes node and
         `node_resps[1]` the output node responses.
@@ -158,23 +154,37 @@ def NodeResponses(tensor, selfresp=True):
     SelfResponses : Temporal evolution of the responses of nodes due to stimulus on themselves.
     """
     # 0) CHECK THE USER INPUT
-    io_helpers.validate_tensor(tensor)
+    # _io_helpers.validate_tensor(tensor)
 
     # 1) Calculate the input and output node properties
     # When self-responses shall be included to the temporal node responses
-    if selfresp:
-        inflows = tensor.sum(axis=2)
-        outflows = tensor.sum(axis=1)
+    inflows = tensor.sum(axis=2)
+    outflows = tensor.sum(axis=1)
 
-    # Excluding the self-responses a node due to inital perturbation on itself.
-    else:
-        nt, N,N = tensor.shape
-        inflows = np.zeros((nt,N), np.float64)
-        outflows = np.zeros((nt,N), np.float64)
+    # Exclude self-responses ('intrinsic') of nodes due to inital perturbation on themselves.
+    if not selfresp:
+        N = tensor.sizes['nodes_to']
         for i in range(N):
-            tempdiags = tensor[:,i,i]
-            inflows[:,i]  = tensor[:,i,:].sum(axis=1) - tempdiags
-            outflows[:,i] = tensor[:,:,i].sum(axis=1) - tempdiags
+            tempdiags = tensor.values[:,i,i]
+            inflows.values[:,i]  -= tempdiags
+            outflows.values[:,i] -= tempdiags
+
+    # # 1) Calculate the input and output node properties
+    # # When self-responses shall be included to the temporal node responses
+    # if selfresp:
+    #     inflows = tensor.sum(axis=2)
+    #     outflows = tensor.sum(axis=1)
+
+    # # Excluding the self-responses a node due to inital perturbation on itself.
+    # else:
+    #     nt, N,_ = tensor.shape
+    #     inflows = np.zeros((nt,N), np.float64)
+    #     outflows = np.zeros((nt,N), np.float64)
+    #     for i in range(N):
+    #         tempdiags = tensor[:,i,i]
+    #         inflows[:,i]  = tensor[:,i,:].sum(axis=1) - tempdiags
+    #         outflows[:,i] = tensor[:,:,i].sum(axis=1) - tempdiags
+
 
     node_resps = ( inflows, outflows )
     return node_resps
@@ -185,13 +195,13 @@ def SelfResponses(tensor):
 
     Parameters
     ----------
-    tensor : ndarray (3d) of shape (nt,N,N)
+    tensor : xarray.DataArray of dimension 3 and shape (nt,N,N)
         Temporal evolution of the pair-wise responses, as calculated by one of
         the functions of module *responses.py*.
 
     Returns
     -------
-    self_resps : ndarray (2d) of shape (nt,N).
+    self_resps : xarray.DataArray of dimension 2 and shape (nt,N)
         The temporal evolution of the node responses to stimulus on themselves.
 
     See Also
@@ -199,7 +209,7 @@ def SelfResponses(tensor):
     NodeResponses : Temporal evolution of the input and output responses for each node.
     """
     # 0) CHECK THE USER INPUT
-    io_helpers.validate_tensor(tensor)
+    # _io_helpers.validate_tensor(tensor)
 
     # 1) Calculate the self reponses
     nt, N,N = tensor.shape
@@ -209,22 +219,22 @@ def SelfResponses(tensor):
 
     return self_resps
 
-def Time2Peak(arr, timestep):
+def Time2Peak(tensor, timestep):
     """
     The time that links, nodes or the network need to reach maximal response.
 
     The function calculates the time-to-peak for either links, nodes or the
     whole network, depending on the input array given.
-    - If 'arr' is a (nt,N,N) flow tensor, the output 'ttp_arr' will be an
+    - If 'tensor' is a (nt,N,N) flow tensor, the output 'ttp_arr' will be an
     (N,N) matrix with the ttp between every pair of nodes.
-    - If 'arr' is a (nt,N) temporal flow of the N nodes, the output 'ttp_arr'
+    - If 'tensor' is a (nt,N) temporal flow of the N nodes, the output 'ttp_arr'
     will be an array of length N, containing the ttp of all N nodes.
-    - If 'arr' is an array of length nt (total network flow over time), 'ttp_arr'
+    - If 'tensor' is an array of length nt (total network flow over time), 'ttp_arr'
     will be a scalar, indicating the time at which the whole-network flow peaks.
 
     Parameters
     ----------
-    arr : ndarray of adaptive shape, according to the case.
+    tensor : xarray.DataArray of dimension 3 and shape (nt,N,N)
         Temporal evolution of the flow. An array of optional shapes. Either
         (nt,N,N) for the pair-wise flows, shape (nt,N,N) for the in- or output
         flows of nodes, or a 1D array of length nt for the network flow.
@@ -242,11 +252,11 @@ def Time2Peak(arr, timestep):
     # 0) CHECK THE USER INPUT
     ## TODO: Write a check to verify the curve has a real peak and decays after
     ## the peak. Raise a warning that maybe longer simulation is needed.
-    if arr.shape == 3:
-        io_helpers.validate_tensor(arr)
+    if tensor.shape == 3:
+        _io_helpers.validate_tensor(tensor)
 
     # 1) Get the indices at which every element peaks
-    ttp_arr = arr.argmax(axis=0)
+    ttp_arr = tensor.argmax(axis=0)
     # 2) Identify disconnected pairs
     ttp_arr =np.where(ttp_arr==0, np.inf, ttp_arr)
     # 3) Convert into simulation time
@@ -254,7 +264,7 @@ def Time2Peak(arr, timestep):
 
     return ttp_arr
 
-def AreaUnderCurve(arr, timestep, timespan='alltime'):
+def AreaUnderCurve(tensor, timestep, timespan='alltime'):
     """
     The amount of response accumulated over time.
 
@@ -262,18 +272,18 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
     time. It does so for all pair-wise interactions, for the nodes or for
     the whole network, depending on the input array given.
 
-    - If 'arr' is a (nt,N,N) flow tensor, the output 'integral' will be an
+    - If 'tensor' is a (nt,N,N) flow tensor, the output 'integral' will be an
     (N,N) matrix with the accumulated flow passed between every pair of nodes.
-    - If 'arr' is a (nt,N) temporal flow of the N nodes, the output 'integral'
+    - If 'tensor' is a (nt,N) temporal flow of the N nodes, the output 'integral'
     will be an array of length N, containing the accumulated flow passed through
     all the nodes.
-    - If 'arr' is an array of length nt (total network flow over time), 'integral'
+    - If 'tensor' is an array of length nt (total network flow over time), 'integral'
     will be a scalar, indicating the total amount of flow that went through the
     whole network.
 
     Parameters
     ----------
-    arr : ndarray of adaptive shape, according to the case.
+    tensor : xarray.DataArray of dimension 3 and shape (nt,N,N)
         Temporal evolution of the flow. An array of shape nt x N x N for the
         flow of the links, an array of shape N X nt for the flow of the nodes,
         or a 1-dimensional array of length nt for the network flow.
@@ -298,8 +308,8 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
     # 0) CHECK THE USER INPUT
     ## TODO: Write a check to verify the curve has a real peak and decays after
     ## the peak. Raise a warning that maybe longer simulation is needed.
-    if arr.shape == 3:
-        io_helpers.validate_tensor(arr)
+    if tensor.shape == 3:
+        _io_helpers.validate_tensor(tensor)
 
     # Validate options for optional variable 'timespan'
     caselist = ['alltime', 'raise', 'decay']
@@ -309,19 +319,19 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
     # 1) DO THE CALCULATIONS
     # 1.1) Easy case. Integrate area-under-the-curve along whole time interval
     if timespan == 'alltime':
-        integral = timestep * arr.sum(axis=0)
+        integral = timestep * tensor.sum(axis=0)
 
     # 1.2) Integrate area-under-the-curve until or from the peak time
     else:
         # Get the temporal indices at which the flow(s) peak
-        tpidx = arr.argmax(axis=0)
+        tpidx = tensor.argmax(axis=0)
 
         # Initialise the final array
         tf_shape = arr.shape[1:]
         integral = np.zeros(tf_shape, np.float64)
 
         # Sum the flow(s) over time, only in the desired time interval
-        nsteps = arr.shape[0]
+        nsteps = tensor.shape[0]
         for t in range(1,nsteps):
             # Check if the flow at time t should be accounted for or ignored
             if timespan == 'raise':
@@ -329,7 +339,7 @@ def AreaUnderCurve(arr, timestep, timespan='alltime'):
             elif timespan == 'decay':
                 counts = np.where(t < tpidx, False, True)
             # Sum the flow at the given iteration, if accepted
-            integral += (counts * arr[t])
+            integral += (counts * tensor[t])
 
         # Finally, normalise the integral by the time-step
         integral *= timestep
