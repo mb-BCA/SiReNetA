@@ -71,7 +71,7 @@ import numpy as np
 # import numpy.linalg
 import scipy.linalg
 # Local imports from sireneta
-from . import io_helpers
+from . import _io_helpers
 
 
 ## JACOBIAN MATRICES ###########################################################

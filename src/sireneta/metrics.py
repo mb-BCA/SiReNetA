@@ -54,7 +54,7 @@ cability and flow to analyze complex networks" Phys. Rev. E 97, 052301 (2018).
 # Third party packages
 import numpy as np
 # Local imports from sireneta
-from . import io_helpers
+from . import _io_helpers
 
 
 # TODO: MAKE SURE FUNCTIONS RUN AFTER INTRODUCTION OF validate_tensor() CHECKS

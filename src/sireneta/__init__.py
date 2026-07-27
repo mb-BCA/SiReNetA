@@ -106,14 +106,12 @@ from . import responses
 from .responses import *
 from . import metrics
 from .metrics import *
-from . import simulate
-from . import netmodels
 from . import tools
-# from . import metrics_test
+# import _metrics_test
 
 
 # Some metadata
-__version__ = "1.0.dev1"
+__version__ = "1.0.dev2"
 
 
 
