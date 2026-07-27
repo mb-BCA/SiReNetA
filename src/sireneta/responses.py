@@ -28,7 +28,7 @@ Calculation of Jacobian matrices
 --------------------------------
 TransitionMatrix
     Returns the transition probability matrix for random walks.
-JacobianMOU
+Jacobian_LeakyCascade
     Calculates the Jacobian matrix for the MOU dynamic system.
 LaplacianMatrix
     Calculates the graph Laplacian.
@@ -219,7 +219,7 @@ def LaplacianMatrix(con, normed=False):
 ## GENERATION OF THE MAIN TENSORS #############################################
 ## DISCRETE-TIME CANONICAL MODELS _____________________________________________
 
-# TODO: MAYBE, RETHINK THE NAMING OF THESE FUNCTIONS ?
+# TODO: Maybe, rethink the naming of these functions ?
 
 def DiscreteCascade(con, S0=1.0, tmax=10, labels=None):
     """Computes the pair-wise responses over time for the discrete cascade model.
@@ -380,6 +380,8 @@ def RandomWalk(con, S0=1, tmax=10, labels=None):
 def ContCascade(con, S0=1.0, tmax=10, timestep=0.1, labels=None):
     # TODO: Shall we allow 'S0' to be a matrix of (possibly correlated) gaussian
     # white noise, as originally for the mou ?
+    # TODO: Why don't we have a 'case' = ['full', 'intrinsic', 'regressed']
+    # parameter here? Shall we?
     """Computes the pair-wise responses over time for the continuous cascade model.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
@@ -446,11 +448,10 @@ def ContCascade(con, S0=1.0, tmax=10, timestep=0.1, labels=None):
     # Convert the stimuli into a matrix
     if S0.ndim in [0,1]:
         S0mat = S0 * np.identity(N, dtype=np.float64)
-        # S0mat = scipy.linalg.sqrtm(S0mat)
 
     # 2) COMPUTE THE PAIR-WISE RESPONSE MATRICES OVER TIME
-    for it in range(nt):
-        t = it * timestep
+    timepoints = np.arange(0,tmax+1e-6,timestep, dtype=np.float64)
+    for it,t in enumerate(timepoints):
         # Calculate the Green's function at time t.
         greenf_t = scipy.linalg.expm(con * t)
         # Calculate the pair-wise responses at time t.
@@ -459,7 +460,6 @@ def ContCascade(con, S0=1.0, tmax=10, timestep=0.1, labels=None):
     # 3) CONVERT INTO AN xarray OBJECT
     if labels is None:
         labels = [ f"node_{i}" for i in range(N) ]
-    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
 
     responses = xr.DataArray( resp_matrices,
             dims=("time", "nodes_to", "nodes_from"),
@@ -569,25 +569,24 @@ def LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed', 
     if S0.ndim in [0,1]:
         S0mat = S0 * np.identity(N, dtype=np.float64)
 
+    # 2) COMPUTE THE PAIR-WISE RESPONSE MATRICES OVER TIME
+    timepoints = np.arange(0,tmax+1e-6,timestep, dtype=np.float64)
     if case == 'full':
-        for it in range(nt):
-            t = it * timestep
+        for it,t in enumerate(timepoints):
             # Calculate the Green's function at time t
             green_t = scipy.linalg.expm(jac * t)
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t, S0mat )
 
     elif case == 'intrinsic':
-        for it in range(nt):
-            t = it * timestep
+        for it,t in enumerate(timepoints):
             # Calculate the Green's function (of an empty graph) at time t
             greendiag_t = np.diag( np.exp(jacdiag * t) )
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( greendiag_t, S0mat )
 
     elif case == 'regressed':
-        for it in range(nt):
-            t = it * timestep
+        for it,t in enumerate(timepoints):
             # Calculate the Green's function (of the full system) at time t
             green_t = scipy.linalg.expm(jac * t)
             # Calculate the Green's function (of an empty graph) at time t
@@ -598,7 +597,6 @@ def LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed', 
     # 3) CONVERT INTO AN xarray OBJECT
     if labels is None:
         labels = [ f"node_{i}" for i in range(N) ]
-    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
 
     responses = xr.DataArray( resp_matrices,
             dims=("time", "nodes_to", "nodes_from"),
@@ -607,11 +605,13 @@ def LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed', 
                         "time_class" : "continuous",
                         "dt" : timestep,
                         "S0" : S0,
-                        "tau": tau }
+                        "tau": tau,
+                        "normcase" : case }
     )
     return responses
 
-def OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed', labels=None):
+def OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1,
+                                                case='regressed', labels=None):
     # TODO: Revise and verify this function. Input S0 or S0mat ?
     """Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
 
@@ -712,25 +712,24 @@ def OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regr
     # Normalise the noise correlation matrix
     S0mat = scipy.linalg.sqrtm(S0mat)
 
+    # 2) COMPUTE THE PAIR-WISE RESPONSE MATRICES OVER TIME
+    timepoints = np.arange(0,tmax+1e-6,timestep, dtype=np.float64)
     if case == 'full':
-        for it in range(nt):
-            t = it * timestep
+        for it, in enumerate(timepoints):
             # Calculate the Green's function at time t
             green_t = scipy.linalg.expm(jac * t)
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t, S0mat )
 
     elif case == 'intrinsic':
-        for it in range(nt):
-            t = it * timestep
+        for it, in enumerate(timepoints):
             # Calculate the Green's function (of an empty graph) at time t
             greendiag_t = np.diag( np.exp(jacdiag * t) )
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( greendiag_t, S0mat )
 
     elif case == 'regressed':
-        for it in range(nt):
-            t = it * timestep
+        for it, in enumerate(timepoints):
             # Calculate the Green's function (of the full system) at time t
             green_t = scipy.linalg.expm(jac * t)
             # Calculate the Green's function (of an empty graph) at time t
@@ -741,7 +740,6 @@ def OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regr
     # 3) CONVERT INTO AN xarray OBJECT
     if labels is None:
         labels = [ f"node_{i}" for i in range(N) ]
-    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
 
     responses = xr.DataArray( resp_matrices,
             dims=("time", "nodes_to", "nodes_from"),
@@ -750,12 +748,13 @@ def OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regr
                         "time_class" : "continuous",
                         "dt" : timestep,
                         "S0" : S0,
-                        "tau": tau }
+                        "tau": tau,
+                        "normcase" : case }
     )
     return responses
 
 def ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
-                                    case='regressed', normed=False, labels=None):
+                        case='regressed', normed_laplacian=False, labels=None):
     # TODO: Shall we allow 'S0' to be a matrix of (possibly correlated) gaussian
     # white noise, as originally for the mou ?
     """Computes the pair-wise responses over time for the linear diffusive model.
@@ -801,7 +800,7 @@ def ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
         - 'regressed' Computes the network responses due to the presence of the
         links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
         'intrinsic' leakage.
-    normed : boolean (optional)
+    normed_laplacian : boolean (optional)
         If True, employs the normalised graph Laplacian L' = D^-1 L.
     labels : array-like of strings, optional, default : None
         The labels of the nodes, if known.
@@ -848,32 +847,31 @@ def ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
     nt = int(tmax / timestep) + 1
     resp_matrices = np.zeros((nt,N,N), dtype=np.float64 )
     # Compute the Jacobian matrices
-    jac = LaplacianMatrix(con, normed=normed)
+    jac = LaplacianMatrix(con, normed=normed_laplacian)
     jacdiag = np.diagonal(jac)
     # Convert the stimuli into a matrix
     if S0.ndim in [0,1]:
         S0mat = S0 * np.identity(N, dtype=np.float64)
     # S0mat = scipy.linalg.sqrtm(S0mat)
 
+    # 2) COMPUTE THE PAIR-WISE RESPONSE MATRICES OVER TIME
+    timepoints = np.arange(0,tmax+1e-6,timestep, dtype=np.float64)
     if case == 'full':
-        for it in range(nt):
-            t = it * timestep
+        for it,t in enumerate(timepoints):
             # Calculate the Green's function at time t
             green_t = scipy.linalg.expm(alpha * jac * t)
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t, S0mat )
 
     elif case == 'intrinsic':
-        for it in range(nt):
-            t = it * timestep
+        for it,t in enumerate(timepoints):
             # Calculate the Green's function (of an empty graph) at time t
             greendiag_t = np.diag( np.exp(alpha * jacdiag * t) )
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( greendiag_t, S0mat )
 
     elif case == 'regressed':
-        for it in range(nt):
-            t = it * timestep
+        for it,t in enumerate(timepoints):
             # Calculate the Green's function (of the full system) at time t
             green_t = scipy.linalg.expm(alpha * jac * t)
             # Calculate the Green's function (of an empty graph) at time t
@@ -884,7 +882,6 @@ def ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
     # 3) CONVERT INTO AN xarray OBJECT
     if labels is None:
         labels = [ f"node_{i}" for i in range(N) ]
-    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
 
     responses = xr.DataArray( resp_matrices,
             dims=("time", "nodes_to", "nodes_from"),
@@ -893,7 +890,9 @@ def ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
                         "time_class" : "continuous",
                         "dt" : timestep,
                         "S0" : S0,
-                        "alpha": alpha }
+                        "alpha": alpha,
+                        "normcase" : case,
+                        "normed_laplacian": normed_laplacian }
     )
     return responses
 
