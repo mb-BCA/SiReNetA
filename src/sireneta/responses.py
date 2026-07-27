@@ -35,17 +35,17 @@ LaplacianMatrix
 
 Generation of main tensors
 --------------------------
-Resp_DiscreteCascade (Resp_DC)
+DiscreteCascade (DC)
     Computes the pair-wise responses over time for the discrete cascade model.
-Resp_RandomWalk (Resp_RW)
+RandomWalk (RW)
     Computes the pair-wise responses over time for the simple random walk model.
-Resp_ContCascade (Resp_CC)
+ContCascade (CC)
     Computes the pair-wise responses over time for the continuous cascade model.
-Resp_LeakyCascade (Resp_LC)
+LeakyCascade (LC)
     Computes the pair-wise responses over time for the leaky-cascade model.
-Resp_OrnsteinUhlenbeck (Resp_MOU)
+OrnsteinUhlenbeck (MOU)
     Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
-Resp_ContDiffusion (Resp_CD)
+ContDiffusion (CD)
     Computes the pair-wise responses over time for the linear diffusive model.
 
 
@@ -68,6 +68,7 @@ cability and flow to analyze complex networks" Phys. Rev. E 97, 052301 (2018).
 
 # Third party packages
 import numpy as np
+import xarray as xr
 # import numpy.linalg
 import scipy.linalg
 # Local imports from sireneta
@@ -76,7 +77,6 @@ from . import _io_helpers
 
 ## JACOBIAN MATRICES ###########################################################
 # TODO: Merge different jacobian generator functions into a single function !?
-
 def TransitionMatrix(con, rwcase='simple'):
     # TODO: Add random walk with teleportation and other biased rw models.
     """Returns the transition probability matrix for random walks.
@@ -221,7 +221,7 @@ def LaplacianMatrix(con, normed=False):
 
 # TODO: MAYBE, RETHINK THE NAMING OF THESE FUNCTIONS ?
 
-def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
+def DiscreteCascade(con, S0=1.0, tmax=10, labels=None):
     """Computes the pair-wise responses over time for the discrete cascade model.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
@@ -249,10 +249,12 @@ def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
         If a 1d-array is given, stimulus `S0[i]` is initially applied at node i.
     tmax : integer, optional
         The duration of the simulation, number of discrete time steps.
+    labels : array-like of strings, optional, default : None
+        The labels of the nodes, if known.
 
     Returns
     -------
-    resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
+    responses : xarray.DataArray of dimension 3 and shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
         the response of node i at time t, due to an initial perturbation on j.
@@ -280,9 +282,22 @@ def Resp_DiscreteCascade(con, S0=1.0, tmax=10):
         # resp_matrices[t] = np.matmul(resp_matrices[t-1], con)
         resp_matrices[t] = np.matmul(con, resp_matrices[t-1])
 
-    return resp_matrices
+    # 3) CONVERT INTO AN xarray OBJECT
+    if labels is None:
+        labels = [ f"node_{i}" for i in range(N) ]
+    timepoints = np.arange(nt, dtype=np.uint64)
 
-def Resp_RandomWalk(con, S0=1, tmax=10):
+    responses = xr.DataArray( resp_matrices,
+            dims=("time", "nodes_to", "nodes_from"),
+            coords={"time" : timepoints, "nodes_to":labels, "nodes_from":labels},
+            attrs = { "model" : "DiscreteCascade",
+                        "time_class" : "discrete",
+                        "dt" : 1.0,
+                        "S0" : S0 }
+    )
+    return responses
+
+def RandomWalk(con, S0=1, tmax=10, labels=None):
     """Computes the pair-wise responses over time for the simple random walk model.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
@@ -311,10 +326,12 @@ def Resp_RandomWalk(con, S0=1, tmax=10):
         given, then `S0[i]` walkers start from node i.
     tmax : integer, optional
         The duration of the simulation, number of discrete time steps.
+    labels : array-like of strings, optional, default : None
+        The labels of the nodes, if known.
 
     Returns
     -------
-    resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
+    responses : xarray.DataArray of dimension 3 and shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
         the response of node i at time t, due to an initial perturbation on j.
@@ -343,12 +360,25 @@ def Resp_RandomWalk(con, S0=1, tmax=10):
     for t in range(1,nt):
         resp_matrices[t] = np.matmul(tpmatrix, resp_matrices[t-1])
 
-    return resp_matrices
+    # 3) CONVERT INTO AN xarray OBJECT
+    if labels is None:
+        labels = [ f"node_{i}" for i in range(N) ]
+
+    timepoints = np.arange(nt, dtype=np.uint64)
+    responses = xr.DataArray( resp_matrices,
+            dims=("time", "nodes_to", "nodes_from"),
+            coords={"time" : timepoints, "nodes_to":labels, "nodes_from":labels},
+            attrs = { "model" : "RandomWalk",
+                        "time_class" : "discrete",
+                        "dt" : 1.0,
+                        "S0" : S0 }
+    )
+    return responses
 
 
 
 ## CONTINUOUS-TIME CANONICAL MODELS ____________________________________________
-def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
+def ContCascade(con, S0=1.0, tmax=10, timestep=0.1, labels=None):
     # TODO: Shall we allow 'S0' to be a matrix of (possibly correlated) gaussian
     # white noise, as originally for the mou ?
     """Computes the pair-wise responses over time for the continuous cascade model.
@@ -380,10 +410,12 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
         Duration of the simulation, arbitrary time units.
     timestep : scalar, optional
         Temporal step (resolution) between consecutive calculations of responses.
+    labels : array-like of strings, optional, default : None
+        The labels of the nodes, if known.
 
     Returns
     -------
-    resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
+    responses : xarray.DataArray of dimension 3 and shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
         the response of node i at time t, due to an initial perturbation on j.
@@ -425,9 +457,22 @@ def Resp_ContCascade(con, S0=1.0, tmax=10, timestep=0.1):
         # Calculate the pair-wise responses at time t.
         resp_matrices[it] = np.matmul(greenf_t, S0mat)
 
-    return resp_matrices
+    # 3) CONVERT INTO AN xarray OBJECT
+    if labels is None:
+        labels = [ f"node_{i}" for i in range(N) ]
+    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
 
-def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed'):
+    responses = xr.DataArray( resp_matrices,
+            dims=("time", "nodes_to", "nodes_from"),
+            coords={"time":timepoints, "nodes_to":labels, "nodes_from":labels},
+            attrs = { "model" : "ContCascade",
+                        "time_class" : "continuous",
+                        "dt" : timestep,
+                        "S0" : S0 }
+    )
+    return responses
+
+def LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed', labels=None):
     """Computes the pair-wise responses over time for the leaky-cascade model.
 
     Given a connectivity matrix A, where Aij represents the (weighted)
@@ -478,10 +523,12 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regress
         - 'regressed' Computes the network responses due to the presence of the
         links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
         'intrinsic' leakage.
+    labels : array-like of strings, optional, default : None
+        The labels of the nodes, if known.
 
     Returns
     -------
-    resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
+    responses : xarray.DataArray of dimension 3 and shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
         the response of node i at time t, due to an initial perturbation on j.
@@ -549,9 +596,23 @@ def Resp_LeakyCascade(con, S0=1.0, tau=1.0, tmax=10, timestep=0.1, case='regress
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
-    return resp_matrices
+    # 3) CONVERT INTO AN xarray OBJECT
+    if labels is None:
+        labels = [ f"node_{i}" for i in range(N) ]
+    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
 
-def Resp_OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed'):
+    responses = xr.DataArray( resp_matrices,
+            dims=("time", "nodes_to", "nodes_from"),
+            coords={"time":timepoints, "nodes_to":labels, "nodes_from":labels},
+            attrs = { "model" : "LeakyCascade",
+                        "time_class" : "continuous",
+                        "dt" : timestep,
+                        "S0" : S0,
+                        "tau": tau }
+    )
+    return responses
+
+def OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case='regressed', labels=None):
     # TODO: Revise and verify this function. Input S0 or S0mat ?
     """Pair-wise responses over time for the multivariate Ornstein-Uhlenbeck.
 
@@ -606,10 +667,12 @@ def Resp_OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case=
         - 'regressed' Computes the network responses due to the presence of the
         links: e^{Jt} - e^{J0t}. That is, the 'full' response minus the passive,
         'intrinsic' leakage.
+    labels : array-like of strings, optional, default : None
+        The labels of the nodes, if known.
 
     Returns
     -------
-    resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
+    responses : xarray.DataArray of dimension 3 and shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
         the response of node i at time t, due to an initial perturbation on j.
@@ -676,11 +739,25 @@ def Resp_OrnsteinUhlenbeck(con, S0mat=1.0, tau=1.0, tmax=10, timestep=0.1, case=
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
-    return resp_matrices
+    # 3) CONVERT INTO AN xarray OBJECT
+    if labels is None:
+        labels = [ f"node_{i}" for i in range(N) ]
+    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
 
-def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
-                                                case='regressed', normed=False):
-    # TODO: Shall we allow 's0' to be a matrix of (possibly correlated) gaussian
+    responses = xr.DataArray( resp_matrices,
+            dims=("time", "nodes_to", "nodes_from"),
+            coords={"time":timepoints, "nodes_to":labels, "nodes_from":labels},
+            attrs = { "model" : "OrnsteinUhlenbeck",
+                        "time_class" : "continuous",
+                        "dt" : timestep,
+                        "S0" : S0,
+                        "tau": tau }
+    )
+    return responses
+
+def ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
+                                    case='regressed', normed=False, labels=None):
+    # TODO: Shall we allow 'S0' to be a matrix of (possibly correlated) gaussian
     # white noise, as originally for the mou ?
     """Computes the pair-wise responses over time for the linear diffusive model.
 
@@ -727,10 +804,12 @@ def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
         'intrinsic' leakage.
     normed : boolean (optional)
         If True, employs the normalised graph Laplacian L' = D^-1 L.
+    labels : array-like of strings, optional, default : None
+        The labels of the nodes, if known.
 
     Returns
     -------
-    resp_matrices : ndarray (3d) of shape (tmax+1,N,N)
+    responses : xarray.DataArray of dimension 3 and shape (tmax+1,N,N)
         Temporal evolution of the pair-wise responses. The first time point
         contains the matrix of inputs. Entries `resp_matrices[t,i,j]` represent
         the response of node i at time t, due to an initial perturbation on j.
@@ -803,17 +882,32 @@ def Resp_ContDiffusion(con, S0=1.0, alpha=1.0, tmax=10, timestep=0.1,
             # Calculate the pair-wise responses at time t
             resp_matrices[it] = np.matmul( green_t - greendiag_t, S0mat )
 
-    return resp_matrices
+    # 3) CONVERT INTO AN xarray OBJECT
+    if labels is None:
+        labels = [ f"node_{i}" for i in range(N) ]
+    timepoints = np.arange(0,tmax+timestep,timestep, dtype=np.float64)
+
+    responses = xr.DataArray( resp_matrices,
+            dims=("time", "nodes_to", "nodes_from"),
+            coords={"time":timepoints, "nodes_to":labels, "nodes_from":labels},
+            attrs = { "model" : "ContDiffusion",
+                        "time_class" : "continuous",
+                        "dt" : timestep,
+                        "S0" : S0,
+                        "alpha": alpha }
+    )
+    return responses
 
 
 
 ## DEFINE ALIASES FOR SHORTER NAMES ############################################
-Resp_DC =  Resp_DiscreteCascade
-Resp_RW =  Resp_RandomWalk
-Resp_CC =  Resp_ContCascade
-Resp_LC =  Resp_LeakyCascade
-Resp_MOU = Resp_OrnsteinUhlenbeck
-Resp_CD =  Resp_ContDiffusion
+## TODO: Write these aliases properly !!
+DC =  DiscreteCascade
+RW =  RandomWalk
+CC =  ContCascade
+LC =  LeakyCascade
+MOU = OrnsteinUhlenbeck
+CD =  ContDiffusion
 
 
 
