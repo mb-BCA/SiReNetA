@@ -77,10 +77,11 @@ Do not forget the "." at the end which means "*look for the pyproject.toml file 
 
 The package is organised into the following user modules:
 
-- *__responses.py__* : Functions to calculate the spatio-temporal evolution of pair-wise node responses $R_{ij}(t)$ to initial unit stimuli, under different canonical models.
-- *__metrics.py__* : Descriptors to characterise the networks out of the $R_{ij}(t)$ spatio-temporal responses.
-- ~~*__simulate.py__* : Functions to run simulations of the different canonical models on networks.~~
-- *__tools.py__* : Miscellaneous functionalities.
+- ***responses.py*** : Functions to calculate the spatio-temporal evolution of pair-wise node responses $R_{ij}(t)$ to initial unit stimuli, under different canonical models.
+- ***metrics.py*** : Descriptors to characterise the networks out of the $R_{ij}(t)$ spatio-temporal responses.
+- ***tools.py*** : Miscellaneous functionalities.
+- ~~***simulate.py*** : Functions to run simulations of the different canonical models on networks.~~ Deprecated, only available for testing.
+
 
 
 #### FINDING FURTHER DOCUMENTATION
