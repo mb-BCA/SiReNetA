@@ -103,15 +103,15 @@ limitations under the License.
 """
 
 from . import responses
-from .responses import *
+# from .responses import *
 from . import metrics
 from .metrics import *
 from . import tools
-# import _metrics_test
+from tools import *
 
 
 # Some metadata
-__version__ = "1.0.dev2"
+__version__ = "1.0.dev3"
 
 
 
