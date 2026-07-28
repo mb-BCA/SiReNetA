@@ -1,16 +1,6 @@
 ## HISTORY OF CHANGES
 
 
-##### December XX, 2025 (Release of Version 1.0)
-
-TO BE REVISED BEFORE v1 RELEASE.
-Stable version 1.0 checked, validated and released.
-
-* The library has been reshaped to be compliant with the modern [PyPA specifications](https://packaging.python.org/en/latest/specifications/).
-* [Hatch](https://hatch.pypa.io/latest/) was chosen as the tool to build and publish the package. See the *pyproject.toml* file. 
-* Bug fixes to adapt to the various changes in Python and NumPy since last release.
-* _Sample and validation scripts in the "*Examples/*" folder revised and adapted to recent changes in Python and NumPy._ 
-
 
 ##### March 14, 2024
 
