@@ -33,7 +33,7 @@ SelfResponses
     Temporal evolution of the responses of nodes due to stimulus on themselves.
 TimeToPeak
     The time that links, nodes or the network need to reach maximal response.
-AreaUnderCurve
+AreaUnderCurve (Total Response)
     Total amount of response accumulated over time.
 
 
@@ -106,6 +106,7 @@ def GlobalResponse(tensor, selfresp=True):
     return global_response
 
 def Diversity(tensor):
+    ## TODO: Otional parameter 'selfresps' should be added to this one too !!
     """
     Inhomogeneity of the pair-wise responses patterns, calucalted over time.
 
@@ -259,7 +260,7 @@ def Time2Peak(tensor):
 
 def AreaUnderCurve(tensor):
     """
-    The amount of response accumulated over time.
+    (Total Response) The amount of response accumulated over time.
 
     The function calculates the area-under-the-curve for the response curves over
     time. It does so for all pair-wise interactions, for the nodes or for
