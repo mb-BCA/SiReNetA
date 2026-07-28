@@ -103,7 +103,7 @@ limitations under the License.
 """
 
 from . import responses
-# from .responses import *
+from .responses import (TransitionMatrix, Jacobian_LeakyCascade, LaplacianMatrix)
 from . import metrics
 from .metrics import *
 from . import tools
