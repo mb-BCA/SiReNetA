@@ -3,13 +3,12 @@
 https://pypi.org/project/sireneta/)
 [![Apache-2.0 License](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](http://choosealicense.com/licenses/Apache-2.0/)
 
+> **NOTE !** Current version is an "*alpha - development*" for testing and validation. Heavy changes expected until release of version 1.0.
+
+> *SiReNetA* supersedes the *[NetDynFlow](https://github.com/mb-BCA/NetDynFlow)* package which accounts for a single canonical model (the *leaky-cascade* or multivariate Ornstein-Uhlenbeck).
+
+
 # SiReNetA
-
-> NOTE! Current version is an "*alpha - development*" for testing and validation. Heavy changes expected until release of version 1.0. Stay tuned or follow ‪@gzamora-lopez.bsky.social‬ in Bluesky for updates.
-
-> If only interested in the *leaky-cascade* canonical model (multivariate Ornstein-Uhlenbeck), for now, we recommend to continue using the *[NetDynFlow](https://github.com/mb-BCA/NetDynFlow)* package until *SiReNetA* supersedes *NetDynFlow*.
-
-
 
 _**Stimulus-Response Network Analysis (SiReNetA)** : A library for the study of complex networks in the light of canonical propagation models._
 
@@ -33,12 +32,13 @@ dynamics: A new framework based on dynamic communicability](https://doi.org/10.1
 &nbsp;
 ### INSTALLATION
 
-Installation of SiReNetA is simple, only the [pip](https://github.com/pypa/pip) package manager is needed. To check whether `pip` is installed, open a terminal and type:
+Installation of SiReNetA requires the official [pip](https://github.com/pypa/pip) package manager. To check whether `pip` is installed in your python environment, open a terminal and type:
 
 	pip --help
 
-> **NOTE**: If you use Anaconda (or any other third-party package manager), we recommend to install the dependencies (python>=3.6, numpy>=1.6, scipy and numba) into the target environment using Anaconda before installing SiReNetA. Otherwise, `pip` will download and install those packages directly from PyPI as well, and you won't be able to manage them through Acanconda.
+> **NOTE**: If using Anaconda, vu or other third-party package managers, we recommend to have the dependencies installed first via the package manager (python>=3.6, numpy>=1.6 and scipy). Otherwise, `pip` will download and install those packages directly from PyPI as well, and you won't be able to update via the package manager.
 
+<!--
 #### Installing from PyPI 
 
 SiReNetA is registered in the official *Python Package Index*, [PyPI](https://pypi.org/project/sireneta/) . To install, open a terminal window and type:
@@ -46,26 +46,27 @@ SiReNetA is registered in the official *Python Package Index*, [PyPI](https://py
 	python3 -m pip install sireneta
 
 To confirm the installation, open an interactive session (e.g., IPython or a Notebook) and try to import the library by typing `import sireneta`.
+-->
 
 #### Direct installation from GitHub 
 
-If you have [git](https://git-scm.com) installed, you may like to install SiReNetA directly from its GitHub repository. Open a terminal and type:
+With [git](https://git-scm.com) also installed, SiReNetA can be directly installed from its GitHub repository. Open a terminal and type:
 
-	python3 -m pip install git+https://github.com/gorkazl/SiReNetA.git@master
+    python3 -m pip install git+https://github.com/gorkazl/SiReNetA.git@master
 
-This will only download and install the package (files in "*src/sireneta/*") into your current environment. Useful for development and testing purposes, you can choose to install the version in another branch by replacing the '*@master*' at the end of the command by '*@branchname*' of the desired branch.
+This only downloads and installs the package (files in "*src/sireneta/*") into the current Python environment. It does not clone the entire repository. Versions in other branches can be equally installed replacing '*@master*' by '*@branchname*'.
 
-#### Installing SiReNetA in editable mode
+#### Installing in editable mode
 
-If you want to install SiReNetA such that you can make changes to it "*on the fly*" then, visit its GitHub repository [https://github.com/gorkazl/SiReNetA/](https://github.com/gorkazl/SiReNetA/), select a branch and then click on the green "*<> Code*" button on the top right and select "Download ZIP" from the pop-up menu. Once downloaded, move the *zip* file to a target folder (e.g., "*~/Documents/myLibraries/*") and unzip the file. Open a terminal and `cd` to the resulting folder, e.g.,
+To install SiReNetA such that you can make changes to it "*on the fly*" then, visit its GitHub repository [https://github.com/gorkazl/SiReNetA/](https://github.com/gorkazl/SiReNetA/), select a branch and then click on the green "*<> Code*" button (usually on the top right). Select "Download ZIP" from the pop-up menu. Once downloaded, move the *zip* file to a target folder (e.g., "*~/Documents/myLibraries/*") and unzip the file. Open a terminal and `cd` to the resulting folder, e.g.,
 
-	cd ~/Documents/myLibraries/SiReNetA-master/
+    cd ~/Documents/myLibraries/SiReNetA-master/
 
 Once on the path (make sure it contains the *pyproject.toml* file), type:
 
 	python3 -m pip install -e .
 
-Do not forget the "." at the end which means "*look for the pyproject.toml file in the current directory*." This will install SiReNetA such that every time changes are made to the package (located in the path chosen), these will be inmediately available. You may need to restart the IPython or Jupyter notebook session, though.
+The "." at the end means "*look for the pyproject.toml file in the current directory*." This will install SiReNetA such that every time changes are made to the package (located in the path chosen), these will be inmediately available. You may need to restart the IPython or Jupyter notebook session, though.
 
 
 
@@ -79,9 +80,12 @@ The package is organised into the following user modules:
 
 - *__responses.py__* : Functions to calculate the spatio-temporal evolution of pair-wise node responses $R_{ij}(t)$ to initial unit stimuli, under different canonical models.
 - *__metrics.py__* : Descriptors to characterise the networks out of the $R_{ij}(t)$ spatio-temporal responses.
-- ~~*__simulate.py__* : Functions to run simulations of the different canonical models on networks.~~
 - *__tools.py__* : Miscellaneous functionalities.
 
+
+#### SIMPLE USE-CASE EXAMPLE
+
+write one here.
 
 #### FINDING FURTHER DOCUMENTATION
 
@@ -133,15 +137,15 @@ limitations under the License.
 -------------------------------------------------------------------------------
 ### VERSION HISTORY
 
-##### December XX, 2025 (Release of Version 1.0)
+##### Month DD, 2026 (Release of Version 1.0)
 
 TO BE REVISED BEFORE v1 RELEASE.
-Stable version 1.0 checked, validated and released.
+Stable version 1.0 checked, validated and released. Summary of main features:
 
 * The library has been reshaped to be compliant with the modern [PyPA specifications](https://packaging.python.org/en/latest/specifications/).
 * [Hatch](https://hatch.pypa.io/latest/) was chosen as the tool to build and publish the package. See the *pyproject.toml* file. 
 * Bug fixes to adapt to the various changes in Python and NumPy since last release.
-* _Sample and validation scripts in the "*Examples/*" folder revised and adapted to recent changes in Python and NumPy._ 
+* TODO: Sample and validation scripts included in the "*Examples/*" folder. 
 
 ##### March 14, 2024
 
